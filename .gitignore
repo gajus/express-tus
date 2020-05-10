@@ -1,0 +1,16 @@
+coverage
+dist
+node_modules
+libxl.dylib
+*.log
+.*
+!.babelrc
+!.dockerignore
+!.editorconfig
+!.eslintignore
+!.eslintrc
+!.flowconfig
+!.gitignore
+!.gitlab-ci.yml
+!.npmignore
+!.roarr.js

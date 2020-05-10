@@ -1,0 +1,84 @@
+{
+  "ava": {
+    "babel": {
+      "compileAsTests": [
+        "test/helpers/**/*"
+      ]
+    },
+    "files": [
+      "test/contra-explorer-api/**/*"
+    ],
+    "require": [
+      "@babel/register"
+    ]
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^4.7.0",
+    "body-parser": "^1.19.0",
+    "delay": "^4.3.0",
+    "es6-error": "^4.1.1",
+    "express": "^4.17.1",
+    "express-promise-router": "^3.0.3",
+    "fs-extra": "^9.0.0",
+    "lightship": "^6.1.0",
+    "normalize-url": "^5.0.0",
+    "roarr": "^2.15.3",
+    "serialize-error": "^6.0.0",
+    "sharp": "^0.25.2",
+    "slonik": "^22.4.8",
+    "slonik-interceptor-preset": "^1.2.10",
+    "tmp": "^0.2.1",
+    "uuid": "^8.0.0",
+    "yargs": "^15.3.1"
+  },
+  "devDependencies": {
+    "@ava/babel": "^1.0.1",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.6",
+    "@babel/node": "^7.8.7",
+    "@babel/plugin-transform-flow-strip-types": "^7.9.0",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/register": "^7.9.0",
+    "ava": "^3.8.2",
+    "babel-plugin-istanbul": "^6.0.0",
+    "babel-plugin-transform-export-default-name": "^2.0.4",
+    "eslint": "^7.0.0",
+    "eslint-config-canonical": "^19.0.4",
+    "flow-bin": "^0.124.0",
+    "husky": "^4.2.5",
+    "nodemon": "^2.0.3",
+    "nyc": "^15.0.1",
+    "sinon": "^9.0.2"
+  },
+  "nyc": {
+    "all": true,
+    "exclude": [
+      "src/bin/**/*"
+    ],
+    "include": [
+      "src/**/*.js"
+    ],
+    "instrument": false,
+    "reporter": [
+      "html",
+      "text-summary"
+    ],
+    "require": [
+      "@babel/register"
+    ],
+    "silent": true,
+    "sourceMap": false
+  },
+  "private": true,
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm run test"
+    }
+  },
+  "scripts": {
+    "build": "babel ./src --source-maps --copy-files --out-dir ./dist",
+    "dev": "ROARR_LOG=true NODE_ENV=development nodemon --watch src --ext js,graphql --exec \"babel-node\" src/bin/server.js | roarr",
+    "lint": "eslint --fix ./src && flow",
+    "test": "date"
+  }
+}
