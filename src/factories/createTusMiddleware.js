@@ -47,12 +47,16 @@ export default (configurationInput: ConfigurationInputType) => {
       outgoingMessage
         .status(501)
         .end('Not Implemented');
+
+      return;
     }
 
     if (!incomingMessage.headers['upload-length']) {
       outgoingMessage
         .status(400)
         .end();
+
+      return;
     }
 
     const uploadLength = parseUploadLengthHeader(incomingMessage.headers['upload-length']);

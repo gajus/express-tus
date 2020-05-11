@@ -88,7 +88,7 @@
     "build": "babel ./src --source-maps --copy-files --out-dir ./dist",
     "dev": "ROARR_LOG=true NODE_ENV=development nodemon --watch src --ext js,graphql --exec \"babel-node\" src/bin/server.js | roarr",
     "lint": "eslint --fix ./src && flow",
-    "test": "date"
+    "test": "NODE_ENV=test ava --verbose --serial"
   },
   "version": "0.0.0-dev"
 }

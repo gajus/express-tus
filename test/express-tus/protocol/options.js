@@ -9,7 +9,7 @@ import createHttpServerWithRandomPort from '../../helpers/createHttpServerWithRa
 test('OPTIONS successful response produces 204', async (t) => {
   const app = express();
 
-  app.use(createTusMiddleware());
+  app.use(createTusMiddleware({}));
 
   const server = await createHttpServerWithRandomPort(app);
 
@@ -24,7 +24,7 @@ test('OPTIONS successful response produces 204', async (t) => {
 test('OPTIONS describes tus-version', async (t) => {
   const app = express();
 
-  app.use(createTusMiddleware());
+  app.use(createTusMiddleware({}));
 
   const server = await createHttpServerWithRandomPort(app);
 
@@ -38,7 +38,7 @@ test('OPTIONS describes tus-version', async (t) => {
 test('OPTIONS describes tus-extension', async (t) => {
   const app = express();
 
-  app.use(createTusMiddleware());
+  app.use(createTusMiddleware({}));
 
   const server = await createHttpServerWithRandomPort(app);
 
@@ -46,7 +46,7 @@ test('OPTIONS describes tus-extension', async (t) => {
     method: 'OPTIONS',
   });
 
-  t.is(response.headers['tus-extension'], 'creation,creation-with-upload,termination');
+  t.is(response.headers['tus-extension'], 'creation, creation-with-upload, termination');
 });
 
 // @todo It MAY include Tus-Max-Size headers.

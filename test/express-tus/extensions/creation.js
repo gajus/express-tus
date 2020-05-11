@@ -59,7 +59,7 @@ test('location is resolved using base-path configuration', async (t) => {
 test('upload-defer-length produces 501 (not implemented)', async (t) => {
   const app = express();
 
-  app.use(createTusMiddleware());
+  app.use(createTusMiddleware({}));
 
   const server = await createHttpServerWithRandomPort(app);
 
@@ -153,7 +153,7 @@ test('createUpload is called with the original upload-length', async (t) => {
 test('PATCH request with unsupported content-type produces 415', async (t) => {
   const app = express();
 
-  app.use(createTusMiddleware());
+  app.use(createTusMiddleware({}));
 
   const server = await createHttpServerWithRandomPort(app);
 
@@ -248,7 +248,7 @@ test('produces 404 upload cannot be found', async (t) => {
   t.is(response.statusCode, 404);
 });
 
-test.only('successful PATCH produces 204', async (t) => {
+test('successful PATCH produces 204', async (t) => {
   const app = express();
 
   app.use(createTusMiddleware({
