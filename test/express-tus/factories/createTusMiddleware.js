@@ -3,7 +3,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import got from 'got';
-import createTestServer from '../helpers/createTestServer';
+import createTestServer from '../../helpers/createTestServer';
 
 test('OPTIONS successful response produces 204', async (t) => {
   const server = await createTestServer({});
@@ -207,6 +207,27 @@ test('PATCH with an unexpected upload-offset produces 409 conflict', async (t) =
   });
 
   t.is(response.statusCode, 409);
+});
+
+test('PATCH produces 404 if upload is not found', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      return null;
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'content-type': 'application/offset+octet-stream',
+      'tus-resumable': '1.0.0',
+      'upload-length': '100',
+      'upload-offset': '50',
+    },
+    method: 'PATCH',
+    throwHttpErrors: false,
+  });
+
+  t.is(response.statusCode, 404);
 });
 
 test('produces 400 if PATCH request is made without upload-offset', async (t) => {
