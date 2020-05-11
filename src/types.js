@@ -49,7 +49,7 @@ export type ConfigurationInputType = {|
   +basePath?: string,
   +createUid?: () => MaybePromiseType<string>,
   +createUpload?: (input: UploadInputType) => MaybePromiseType<RejectionResponseType | null>,
-  +getUpload: (uid: string) => UploadType,
+  +getUpload: (uid: string) => MaybePromiseType<UploadType>,
 |};
 
 export type ConfigurationType = {|
@@ -57,5 +57,5 @@ export type ConfigurationType = {|
   +basePath: string,
   +createUid: () => MaybePromiseType<string>,
   +createUpload: (input: UploadInputType) => MaybePromiseType<RejectionResponseType | null>,
-  +getUpload: (uid: string) => UploadType,
+  +getUpload: (uid: string) => MaybePromiseType<UploadType>,
 |};
