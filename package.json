@@ -88,7 +88,7 @@
     "url": "https://github.com/gajus/express-tus"
   },
   "scripts": {
-    "build": "babel ./src --source-maps --copy-files --out-dir ./dist",
+    "build": "rm -fr ./dist && babel ./src --source-maps --copy-files --out-dir ./dist",
     "dev": "ROARR_LOG=true NODE_ENV=development nodemon --watch src --ext js,graphql --exec \"babel-node\" src/bin/server.js | roarr",
     "lint": "eslint --fix ./src && flow",
     "test": "NODE_ENV=test ava --verbose --serial"
