@@ -2,21 +2,15 @@
 
 import test from 'ava';
 import sinon from 'sinon';
-import express from 'express';
 import got from 'got';
-import createTusMiddleware from '../../../src/factories/createTusMiddleware';
-import createHttpServerWithRandomPort from '../../helpers/createHttpServerWithRandomPort';
+import createTestServer from '../../helpers/createTestServer';
 
 test('empty POST creates a new upload resource', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     createUid: () => {
       return 'foo';
     },
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   const response = await got(server.url, {
     headers: {
@@ -32,16 +26,12 @@ test('empty POST creates a new upload resource', async (t) => {
 });
 
 test('location is resolved using base-path configuration', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     basePath: '/foo',
     createUid: () => {
       return 'bar';
     },
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   const response = await got(server.url, {
     headers: {
@@ -57,11 +47,7 @@ test('location is resolved using base-path configuration', async (t) => {
 });
 
 test('upload-defer-length produces 501 (not implemented)', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({}));
-
-  const server = await createHttpServerWithRandomPort(app);
+  const server = await createTestServer({});
 
   const response = await got(server.url, {
     headers: {
@@ -77,15 +63,11 @@ test('upload-defer-length produces 501 (not implemented)', async (t) => {
 });
 
 test('createUpload is called with the original incomingMessage', async (t) => {
-  const app = express();
-
   const createUpload = sinon.stub().returns(null);
 
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     createUpload,
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   await got(server.url, {
     headers: {
@@ -101,15 +83,11 @@ test('createUpload is called with the original incomingMessage', async (t) => {
 });
 
 test('createUpload is called with the original upload-metadata', async (t) => {
-  const app = express();
-
   const createUpload = sinon.stub().returns(null);
 
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     createUpload,
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   await got(server.url, {
     headers: {
@@ -128,15 +106,11 @@ test('createUpload is called with the original upload-metadata', async (t) => {
 });
 
 test('createUpload is called with the original upload-length', async (t) => {
-  const app = express();
-
   const createUpload = sinon.stub().returns(null);
 
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     createUpload,
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   await got(server.url, {
     headers: {
@@ -151,11 +125,7 @@ test('createUpload is called with the original upload-length', async (t) => {
 });
 
 test('PATCH request with unsupported content-type produces 415', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({}));
-
-  const server = await createHttpServerWithRandomPort(app);
+  const server = await createTestServer({});
 
   const response = await got(server.url + '/foo', {
     headers: {
@@ -171,17 +141,13 @@ test('PATCH request with unsupported content-type produces 415', async (t) => {
 });
 
 test('PATCH with an unexpected upload-offset produces 409 conflict', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     getUpload: () => {
       return {
         uploadOffset: 0,
       };
     },
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   const response = await got(server.url + '/foo', {
     headers: {
@@ -198,17 +164,13 @@ test('PATCH with an unexpected upload-offset produces 409 conflict', async (t) =
 });
 
 test('produces 400 if PATCH request is made without upload-offset', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     getUpload: () => {
       return {
         uploadOffset: 0,
       };
     },
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   const response = await got(server.url + '/foo', {
     headers: {
@@ -224,15 +186,11 @@ test('produces 400 if PATCH request is made without upload-offset', async (t) =>
 });
 
 test('produces 404 upload cannot be found', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     getUpload: () => {
       return null;
     },
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   const response = await got(server.url + '/foo', {
     headers: {
@@ -249,9 +207,7 @@ test('produces 404 upload cannot be found', async (t) => {
 });
 
 test('successful PATCH produces 204', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({
+  const server = await createTestServer({
     getUpload: () => {
       return {
         uploadOffset: 0,
@@ -262,9 +218,7 @@ test('successful PATCH produces 204', async (t) => {
         uploadOffset: 100,
       };
     },
-  }));
-
-  const server = await createHttpServerWithRandomPort(app);
+  });
 
   const response = await got(server.url + '/foo', {
     headers: {

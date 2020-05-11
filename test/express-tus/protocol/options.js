@@ -1,17 +1,11 @@
 // @flow
 
 import test from 'ava';
-import express from 'express';
 import got from 'got';
-import createTusMiddleware from '../../../src/factories/createTusMiddleware';
-import createHttpServerWithRandomPort from '../../helpers/createHttpServerWithRandomPort';
+import createTestServer from '../../helpers/createTestServer';
 
 test('OPTIONS successful response produces 204', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({}));
-
-  const server = await createHttpServerWithRandomPort(app);
+  const server = await createTestServer({});
 
   const response = await got(server.url, {
     method: 'OPTIONS',
@@ -22,11 +16,7 @@ test('OPTIONS successful response produces 204', async (t) => {
 });
 
 test('OPTIONS describes tus-version', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({}));
-
-  const server = await createHttpServerWithRandomPort(app);
+  const server = await createTestServer({});
 
   const response = await got(server.url, {
     method: 'OPTIONS',
@@ -36,11 +26,7 @@ test('OPTIONS describes tus-version', async (t) => {
 });
 
 test('OPTIONS describes tus-extension', async (t) => {
-  const app = express();
-
-  app.use(createTusMiddleware({}));
-
-  const server = await createHttpServerWithRandomPort(app);
+  const server = await createTestServer({});
 
   const response = await got(server.url, {
     method: 'OPTIONS',
