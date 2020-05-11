@@ -70,11 +70,14 @@ export default (configurationInput: ConfigurationInputType) => {
     const uploadLength = parseUploadLengthHeader(incomingMessage.headers['upload-length']);
     const uploadMetadata = parseUploadMetadataHeader(incomingMessage.headers['upload-metadata'] || '');
 
+    const uid = await configuration.createUid();
+
     const maybeRejectionResponse = await configuration.createUpload({
       incomingMessage: {
         headers: incomingMessage.headers,
         url: incomingMessage.url,
       },
+      uid,
       uploadLength,
       uploadMetadata,
     });
@@ -90,7 +93,7 @@ export default (configurationInput: ConfigurationInputType) => {
 
     outgoingMessage
       .set({
-        location: resolveUrl(configuration.basePath.replace(/\/$/g, '') + '/', await configuration.createUid()),
+        location: resolveUrl(configuration.basePath.replace(/\/$/g, '') + '/', uid),
       })
       .status(201)
       .end();

@@ -26,8 +26,9 @@ type ShallowIncomingMessageType = {|
 
 type UploadInputType = {|
   +incomingMessage: ShallowIncomingMessageType,
-  +uploadMetadata: UploadMetadataType,
+  +uid: string,
   +uploadLength: number,
+  +uploadMetadata: UploadMetadataType,
 |};
 
 type RejectionResponseType = {|
