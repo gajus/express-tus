@@ -17,7 +17,7 @@ type HeadersType = {|
   +[key: string]: string,
 |};
 
-type IncomingMessageType = HttpIncomingMessage | HttpsIncomingMessage;
+export type IncomingMessageType = HttpIncomingMessage | HttpsIncomingMessage;
 
 type ShallowIncomingMessageType = {|
   +headers: HeadersType,
@@ -31,7 +31,7 @@ type UploadInputType = {|
   +uploadMetadata: UploadMetadataType,
 |};
 
-type RejectionResponseType = {|
+export type RejectionResponseType = {|
   +body: string,
   +headers: HeadersType,
   +statusCode: number,
@@ -39,7 +39,7 @@ type RejectionResponseType = {|
 
 type MaybePromiseType<T> = Promise<T> | T;
 
-type UploadType = {|
+export type UploadType = {|
   +uploadLength: number,
   +uploadOffset: number,
 |};

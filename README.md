@@ -23,18 +23,29 @@ Conceptually, [tus](https://tus.io/) is a great initiative. However, the existin
 import {
   createTusMiddleware,
 } from 'express-tus';
+import type {
+  UploadType,
+  IncomingMessageType,
+  RejectionResponseType,
+} from 'express-tus';
 
 /**
- * @properties basePath Path to where the tus middleware is mounted. Used for redirects.
+ * @properties basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
  * @properties createUid Generates unique identifier for each upload request. Defaults to UUID v4.
- * @properties createUpload Approves (null result) or rejects (RejectionResponseType result) file upload.
+ * @properties createUpload Approves (null result) or rejects (RejectionResponseType result) file upload. Defaults to allowing all uploads.
  * @properties getUpload Retrieves progress information about an existing upload.
+ * @properties upload Applies bytes contained in the incoming message at the given offset.
  */
 type ConfigurationType = {|
   +basePath?: string,
-  +createUid?: () => MaybePromiseType<string>,
-  +createUpload?: (input: UploadInputType) => MaybePromiseType<RejectionResponseType | null>,
-  +getUpload: (uid: string) => UploadType,
+  +createUid?: () => Promise<string>,
+  +createUpload?: (input: UploadInputType) => Promise<RejectionResponseType | null>,
+  +getUpload: (uid: string) => Promise<UploadType>,
+  +upload: (
+    uid: string,
+    uploadOffset: number,
+    incomingMessage: IncomingMessageType,
+  ) => Promise<UploadType>,
 |};
 
 createTusMiddleware(configuration: ConfigurationType);
