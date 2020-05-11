@@ -12,7 +12,7 @@
 
 Conceptually, [tus](https://tus.io/) is a great initiative. However, the existing implementations are lacking:
 
-* [tus-node-server](https://github.com/tus/tus-node-server) has a big warning stating that usage should be discouraged in favour of tusd.
+* [tus-node-server](https://github.com/tus/tus-node-server) has a big warning stating that usage is discouraged in favour of tusd.
 * [tusd](https://github.com/tus/tusd) has bugs and opinionated limitations (just browse [issues](https://github.com/tus/tusd/issues)).
 
 `express-tus` provides a high-level abstraction that implements tus protocol, but leaves the actual handling of uploads to the implementer. This approach has the benefit of granular control over the file uploads while being compatible with the underlying (tus) protocol.
