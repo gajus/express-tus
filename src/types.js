@@ -1,22 +1,59 @@
 // @flow
 
-/* eslint-disable import/exports-last, no-use-before-define */
+/* eslint-disable import/exports-last */
 
-import type {
-  DatabasePoolType,
-} from 'slonik';
+import {
+  IncomingMessage as HttpIncomingMessage,
+} from 'http';
+import {
+  IncomingMessage as HttpsIncomingMessage,
+} from 'https';
 
-export type {
-  DatabaseConnectionType,
-  DatabasePoolType,
-} from 'slonik';
+export type UploadMetadataType = {|
+  +[key: string]: string,
+|};
 
-export type DatabaseRecordIdType = number;
+type HeadersType = {|
+  +[key: string]: string,
+|};
 
-export type ContextType = {
+type IncomingMessageType = HttpIncomingMessage | HttpsIncomingMessage;
 
-  // eslint-disable-next-line flowtype/no-weak-types
-  authorization: Object,
-  userAccountId: number | null,
-  ...
-};
+type ShallowIncomingMessageType = {|
+  +headers: HeadersType,
+  +url: string,
+|};
+
+type UploadInputType = {|
+  +incomingMessage: ShallowIncomingMessageType,
+  +uploadMetadata: UploadMetadataType,
+  +uploadLength: number,
+|};
+
+type RejectionResponseType = {|
+  +body: string,
+  +headers: HeadersType,
+  +statusCode: number,
+|};
+
+type MaybePromiseType<T> = Promise<T> | T;
+
+type UploadType = {|
+  uploadOffset: number,
+|};
+
+export type ConfigurationInputType = {|
+  +upload: (uid: string, uploadOffset: number, incomingMessage: IncomingMessageType) => Promise<UploadType>,
+  +basePath?: string,
+  +createUid?: () => MaybePromiseType<string>,
+  +createUpload?: (input: UploadInputType) => MaybePromiseType<RejectionResponseType | null>,
+  +getUpload: (uid: string) => UploadType,
+|};
+
+export type ConfigurationType = {|
+  +upload: (uid: string, uploadOffset: number, incomingMessage: IncomingMessageType) => Promise<UploadType>,
+  +basePath: string,
+  +createUid: () => MaybePromiseType<string>,
+  +createUpload: (input: UploadInputType) => MaybePromiseType<RejectionResponseType | null>,
+  +getUpload: (uid: string) => UploadType,
+|};

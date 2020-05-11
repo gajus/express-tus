@@ -1,46 +1,36 @@
-## Contra File Upload API
+## express-tus
 
-Contra File Upload API uses [tus protocol](https://tus.io/protocols/resumable-upload.html).
+[Express](https://expressjs.com/) middleware for [tus protocol](https://tus.io/) (v1.0.0).
 
-## Usage
+## Motivation
 
-In production, Tus is deployed to `upload.contra.com`.
+Conceptually, [tus](https://tus.io/) is a great initiative. However, the existing implementations are lacking:
 
-Uploading files requires to use [one of the libraries](https://tus.io/implementations.html) that implement tus protocol. For JavaScript projects, use [tus-js-client](https://github.com/tus/tus-js-client).
+* [tus-node-server](https://github.com/tus/tus-node-server) has a big warning stating that usage should be discouraged in favour of tusd.
+* [tusd](https://github.com/tus/tusd) has bugs and opinionated limitations (just browse [issues](https://github.com/tus/tusd/issues)).
 
-## Architecture
+`express-tus` provides a high-level abstraction that implements tus protocol, but leaves the actual handling of uploads to the implementer. This approach has the benefit of granular control over the file uploads while being compatible with the underlying (tus) protocol.
 
-File uploads are handled by [tusd](https://github.com/tus/tusd).
+## API
 
-tusd is integrated with `contra-file-upload-api` using [HTTP hooks](https://github.com/tus/tusd/blob/master/docs/hooks.md#http-hooks).
+```js
+import {
+  createTusMiddleware,
+} from 'express-tus';
 
-* tusd handles file upload to the server running the service.
-* `contra-file-upload-api` handles:
-  * client request authentication
-  * recording meta-data about file uploads to the database
-  * encoding
-  * uploading to GCP (for images)
-  * uploading to Cloudflare (for videos)
+/**
+ * @properties basePath Path to where the tus middleware is mounted. Used for redirects.
+ * @properties createUid Generates unique identifier for each upload request. Defaults to UUID v4.
+ * @properties createUpload Approves (null result) or rejects (RejectionResponseType result) file upload.
+ * @properties getUpload Retrieves progress information about an existing upload.
+ */
+type ConfigurationType = {|
+  +basePath?: string,
+  +createUid?: () => MaybePromiseType<string>,
+  +createUpload?: (input: UploadInputType) => MaybePromiseType<RejectionResponseType | null>,
+  +getUpload: (uid: string) => UploadType,
+|};
 
-Notes:
-
-* The reason tusd is not being used to upload directly to GCP is because:
-  * we want to convert images tp webp before uploading them to GCP
-  * we want to upload videos to Cloudflare
-
-### Running locally
-
-Running `contra-file-upload-api` locally requires that you configure a local instance of [tusd](https://github.com/tus/tusd).
-
-```bash
-docker run \
-  -it \
-  --rm \
-  --name tusd \
-  # You must configure `contra-file-upload-api`
-  # to use the same upload directory.
-  -v $PWD/.uploads:/srv/tusd-data/data \
-  -p 1080:1080 \
-  tusproject/tusd --base-path=/upload --upload-dir=/srv/tusd-data/data --hooks-http http://host.docker.internal:8080/hooks
+createTusMiddleware(configuration: ConfigurationType);
 
 ```

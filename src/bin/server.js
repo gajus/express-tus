@@ -108,11 +108,13 @@ const userAccountId = 1;
 router.post('/hooks', async (incomingMessage, outgoingMessage) => {
   const hookName = incomingMessage.headers['hook-name'];
 
+  outgoingMessage.end('OK');
+
+  return;
+
   log.debug('received %s hook', hookName);
 
   const payload = incomingMessage.body;
-
-  console.log('payload', payload);
 
   if (payload.Upload.ID) {
     const uploadedFile = path.resolve(argv.uploadDirectory, payload.Upload.ID);
@@ -232,6 +234,8 @@ router.post('/hooks', async (incomingMessage, outgoingMessage) => {
 });
 
 const app = express();
+
+app.disable('x-powered-by');
 
 app.use(bodyParser.json());
 
