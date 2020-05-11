@@ -1,9 +1,6 @@
 // @flow
 
 import express from 'express';
-import {
-  createHttpTerminator,
-} from 'http-terminator';
 import createTusMiddleware from '../../src/factories/createTusMiddleware';
 import createHttpServerWithRandomPort from './createHttpServerWithRandomPort';
 
