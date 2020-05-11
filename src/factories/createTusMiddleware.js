@@ -31,6 +31,14 @@ export default (configurationInput: ConfigurationInputType) => {
       'x-content-type-options': 'nosniff',
     });
 
+    if (incomingMessage.headers['x-http-method-override']) {
+      outgoingMessage
+        .status(501)
+        .end('Not implemented.');
+
+      return;
+    }
+
     if (incomingMessage.method !== 'OPTIONS' && incomingMessage.headers['tus-resumable'] === undefined) {
       outgoingMessage
         .status(412)
@@ -46,7 +54,7 @@ export default (configurationInput: ConfigurationInputType) => {
     if (incomingMessage.headers['upload-defer-length']) {
       outgoingMessage
         .status(501)
-        .end('Not Implemented');
+        .end('Not implemented.');
 
       return;
     }

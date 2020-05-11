@@ -46,6 +46,21 @@ test('location is resolved using base-path configuration', async (t) => {
   t.is(response.body, '');
 });
 
+test('x-http-method-override produces 501 (not implemented)', async (t) => {
+  const server = await createTestServer({});
+
+  const response = await got(server.url, {
+    headers: {
+      'tus-resumable': '1.0.0',
+      'x-http-method-override': 'PATCH',
+    },
+    throwHttpErrors: false,
+  });
+
+  t.is(response.statusCode, 501);
+  t.is(response.body, 'Not implemented.');
+});
+
 test('upload-defer-length produces 501 (not implemented)', async (t) => {
   const server = await createTestServer({});
 
@@ -59,7 +74,7 @@ test('upload-defer-length produces 501 (not implemented)', async (t) => {
   });
 
   t.is(response.statusCode, 501);
-  t.is(response.body, 'Not Implemented');
+  t.is(response.body, 'Not implemented.');
 });
 
 test('createUpload is called with the original incomingMessage', async (t) => {
