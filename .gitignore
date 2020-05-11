@@ -10,3 +10,4 @@ node_modules
 !.flowconfig
 !.gitignore
 !.npmignore
+!.travis.yml
