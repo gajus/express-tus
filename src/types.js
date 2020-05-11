@@ -39,7 +39,8 @@ type RejectionResponseType = {|
 type MaybePromiseType<T> = Promise<T> | T;
 
 type UploadType = {|
-  uploadOffset: number,
+  +uploadLength: number,
+  +uploadOffset: number,
 |};
 
 export type ConfigurationInputType = {|

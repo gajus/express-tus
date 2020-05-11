@@ -278,3 +278,81 @@ test('successful PATCH produces 204', async (t) => {
 
   t.is(response.statusCode, 204);
 });
+
+test('unsuccessful HEAD produces 404', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      return null;
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'HEAD',
+    throwHttpErrors: false,
+  });
+
+  t.is(response.statusCode, 404);
+});
+
+test('successful HEAD produces 200', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      return {
+        uploadLength: 100,
+        uploadOffset: 100,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'HEAD',
+  });
+
+  t.is(response.statusCode, 200);
+});
+
+test('successful HEAD describes upload-length', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      return {
+        uploadLength: 100,
+        uploadOffset: 50,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'HEAD',
+  });
+
+  t.is(response.headers['upload-length'], '100');
+});
+
+test('successful HEAD describes upload-offset', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      return {
+        uploadLength: 100,
+        uploadOffset: 50,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'HEAD',
+  });
+
+  t.is(response.headers['upload-offset'], '50');
+});

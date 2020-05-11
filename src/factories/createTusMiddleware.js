@@ -147,9 +147,29 @@ export default (configurationInput: ConfigurationInputType) => {
 
     outgoingMessage
       .set({
-        'upload-length': nextUpload.uploadOffset,
+        'upload-offset': nextUpload.uploadOffset,
       })
       .status(204)
+      .end();
+  });
+
+  router.head('/:uid', async (incomingMessage, outgoingMessage) => {
+    const upload = await configuration.getUpload(incomingMessage.params.uid);
+
+    if (!upload) {
+      outgoingMessage
+        .status(404)
+        .end('Upload not found.');
+
+      return;
+    }
+
+    outgoingMessage
+      .set({
+        'upload-length': upload.uploadLength,
+        'upload-offset': upload.uploadOffset,
+      })
+      .status(200)
       .end();
   });
 
