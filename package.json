@@ -48,6 +48,9 @@
     "nyc": "^15.0.1",
     "sinon": "^9.0.2"
   },
+  "engines": {
+    "node": ">=14"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "npm run lint && npm run test"
