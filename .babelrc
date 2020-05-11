@@ -8,7 +8,6 @@
   },
   "plugins": [
     "transform-export-default-name",
-    "macros",
     "@babel/transform-flow-strip-types"
   ],
   "presets": [
