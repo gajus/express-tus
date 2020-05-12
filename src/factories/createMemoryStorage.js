@@ -24,6 +24,11 @@ export default (configuration?: ConfigurationType): StorageType => {
     throw new NotFoundError();
   };
 
+  const deleteUpload = (uid) => {
+    // eslint-disable-next-line fp/no-delete
+    delete storage[uid];
+  };
+
   const formatUpload = (upload) => {
     return {
       uploadLength: upload.uploadLength,
@@ -46,12 +51,20 @@ export default (configuration?: ConfigurationType): StorageType => {
     delete: (uid) => {
       // Triggers error if upload does not exist.
       if (getUpload(uid)) {
-        // eslint-disable-next-line fp/no-delete
-        delete storage[uid];
+        deleteUpload(uid);
       }
     },
     getUpload: (uid) => {
-      return formatUpload(getUpload(uid));
+      const upload = getUpload(uid);
+
+      if (upload.uploadExpires && Date.now() > upload.uploadExpires) {
+        deleteUpload(uid);
+
+        // Triggers 404 error.
+        getUpload(uid);
+      }
+
+      return formatUpload(upload);
     },
     upload: (input) => {
       return new Promise((resolve, reject) => {

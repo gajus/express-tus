@@ -34,6 +34,19 @@ import type {
 } from 'express-tus';
 
 /**
+ * @property uploadExpires UNIX timestamp (in milliseconds) after which the upload will be deleted.
+ * @property uploadLength Indicates the size of the entire upload in bytes.
+ * @property uploadMetadata Key-value meta-data about the upload.
+ * @property uploadOffset Indicates a byte offset within a resource.
+ */
+type UploadType = {|
+  +uploadExpires?: number,
+  +uploadLength: number,
+  +uploadMetadata: UploadMetadataType,
+  +uploadOffset: number,
+|};
+
+/**
  * @property createUpload Approves file upload. Defaults to allowing all uploads.
  * @property delete Deletes upload.
  * @property getUpload Retrieves progress information about an existing upload.
@@ -101,5 +114,16 @@ Use [`cors`](https://www.npmjs.com/package/cors) to configure the necessary head
 
 ## Supported extensions
 
-* [creation](https://tus.io/protocols/resumable-upload.html#creation)
-* [termination](https://tus.io/protocols/resumable-upload.html#termination)
+### Creation
+
+[creation](https://tus.io/protocols/resumable-upload.html#creation)
+
+### Expiration
+
+[expiration](https://tus.io/protocols/resumable-upload.html#expiration)
+
+Note that it is the responsibility of the storage engine to detect and delete expired uploads.
+
+### Termination
+
+[termination](https://tus.io/protocols/resumable-upload.html#termination)

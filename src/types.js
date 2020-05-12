@@ -40,12 +40,25 @@ export type ResponseType = {|
 
 type MaybePromiseType<T> = Promise<T> | T;
 
+/**
+ * @property uploadExpires UNIX timestamp (in milliseconds) after which the upload will be deleted.
+ * @property uploadLength Indicates the size of the entire upload in bytes.
+ * @property uploadMetadata Key-value meta-data about the upload.
+ * @property uploadOffset Indicates a byte offset within a resource.
+ */
 export type UploadType = {|
+  +uploadExpires?: number,
   +uploadLength: number,
   +uploadMetadata: UploadMetadataType,
   +uploadOffset: number,
 |};
 
+/**
+ * @property createUpload Approves file upload. Defaults to allowing all uploads.
+ * @property delete Deletes upload.
+ * @property getUpload Retrieves progress information about an existing upload.
+ * @property upload Applies bytes contained in the incoming message at the given offset.
+ */
 export type StorageType = {|
   +createUpload: (input: UploadInputType) => MaybePromiseType<UploadType>,
   +delete: (uid: string) => MaybePromiseType<void>,
@@ -53,6 +66,11 @@ export type StorageType = {|
   +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
 |};
 
+/**
+ * @property basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
+ * @property createUid Generates unique identifier for each upload request. Defaults to UUID v4.
+ * @property formatErrorResponse Formats HTTP response in case of an error.
+ */
 export type ConfigurationInputType = {|
   +basePath?: string,
   +createUid?: () => MaybePromiseType<string>,

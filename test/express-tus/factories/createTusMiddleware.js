@@ -37,7 +37,7 @@ test('OPTIONS describes tus-extension', async (t) => {
     method: 'OPTIONS',
   });
 
-  t.is(response.headers['tus-extension'], 'creation, termination');
+  t.is(response.headers['tus-extension'], 'creation, expiration, termination');
 });
 
 test('empty POST creates a new upload resource', async (t) => {
@@ -146,6 +146,13 @@ test('createUpload is called with the original incomingMessage', async (t) => {
 
   const server = await createTestServer({
     createUpload,
+    getUpload: () => {
+      return {
+        uploadLength: 100,
+        uploadMetadata: {},
+        uploadOffset: 0,
+      };
+    },
   });
 
   await got(server.url, {
@@ -166,6 +173,13 @@ test('createUpload is called with the original upload-metadata', async (t) => {
 
   const server = await createTestServer({
     createUpload,
+    getUpload: () => {
+      return {
+        uploadLength: 100,
+        uploadMetadata: {},
+        uploadOffset: 0,
+      };
+    },
   });
 
   await got(server.url, {
@@ -189,6 +203,13 @@ test('createUpload is called with the original upload-length', async (t) => {
 
   const server = await createTestServer({
     createUpload,
+    getUpload: () => {
+      return {
+        uploadLength: 100,
+        uploadMetadata: {},
+        uploadOffset: 0,
+      };
+    },
   });
 
   await got(server.url, {
@@ -512,4 +533,85 @@ test('successful DELETE responds with 204', async (t) => {
 
   t.is(response.statusCode, 204);
   t.is(deleteUpload.firstCall.firstArg, 'foo');
+});
+
+test('POST describes upload-expires', async (t) => {
+  const uploadExpires = Date.now() + 30 * 1000;
+
+  const server = await createTestServer({
+    createUpload: () => {
+      return null;
+    },
+    getUpload: () => {
+      return {
+        uploadExpires,
+        uploadLength: 100,
+        uploadOffset: 0,
+      };
+    },
+  });
+
+  const response = await got(server.url, {
+    headers: {
+      'tus-resumable': '1.0.0',
+      'upload-length': '100',
+    },
+    method: 'POST',
+  });
+
+  t.is(new Date(response.headers['upload-expires']).getTime(), Math.floor(uploadExpires / 1000) * 1000);
+});
+
+test('PATCH describes upload-expires', async (t) => {
+  const uploadExpires = Date.now() + 30 * 1000;
+
+  const server = await createTestServer({
+    getUpload: () => {
+      return {
+        uploadExpires,
+        uploadOffset: 0,
+      };
+    },
+    upload: () => {
+      return {
+        uploadOffset: 100,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'content-type': 'application/offset+octet-stream',
+      'tus-resumable': '1.0.0',
+      'upload-length': '100',
+      'upload-offset': '0',
+    },
+    method: 'PATCH',
+  });
+
+  t.is(new Date(response.headers['upload-expires']).getTime(), Math.floor(uploadExpires / 1000) * 1000);
+});
+
+test('HEAD describes upload-expires', async (t) => {
+  const uploadExpires = Date.now() + 30 * 1000;
+
+  const server = await createTestServer({
+    getUpload: () => {
+      return {
+        uploadExpires,
+        uploadLength: 100,
+        uploadMetadata: {},
+        uploadOffset: 50,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'HEAD',
+  });
+
+  t.is(new Date(response.headers['upload-expires']).getTime(), Math.floor(uploadExpires / 1000) * 1000);
 });

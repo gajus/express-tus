@@ -49,6 +49,7 @@ const EXPOSE_HEADERS = [
 
 const SUPPORTED_EXTENSIONS = [
   'creation',
+  'expiration',
   'termination',
 ];
 
@@ -141,6 +142,13 @@ export default (configurationInput: ConfigurationInputType) => {
       return;
     }
 
+    const upload = await configuration.getUpload(uid);
+
+    if (upload.uploadExpires) {
+      outgoingMessage
+        .set('upload-expires', new Date(upload.uploadExpires).toUTCString());
+    }
+
     outgoingMessage
       .set({
         location: resolveUrl(configuration.basePath.replace(/\/$/g, '') + '/', uid),
@@ -199,10 +207,8 @@ export default (configurationInput: ConfigurationInputType) => {
       return;
     }
 
-    let nextUpload;
-
     try {
-      nextUpload = await configuration.upload({
+      await configuration.upload({
         incomingMessage,
         uid: incomingMessage.params.uid,
         uploadOffset: upload.uploadOffset,
@@ -220,9 +226,16 @@ export default (configurationInput: ConfigurationInputType) => {
       return;
     }
 
+    upload = await configuration.getUpload(incomingMessage.params.uid);
+
+    if (upload.uploadExpires) {
+      outgoingMessage
+        .set('upload-expires', new Date(upload.uploadExpires).toUTCString());
+    }
+
     outgoingMessage
       .set({
-        'upload-offset': nextUpload.uploadOffset,
+        'upload-offset': upload.uploadOffset,
       })
       .status(204)
       .end();
@@ -268,8 +281,14 @@ export default (configurationInput: ConfigurationInputType) => {
       return;
     }
 
+    if (upload.uploadExpires) {
+      outgoingMessage
+        .set('upload-expires', new Date(upload.uploadExpires).toUTCString());
+    }
+
     if (upload.uploadMetadata) {
-      outgoingMessage.set('upload-metadata', formatUploadMetadataHeader(upload.uploadMetadata));
+      outgoingMessage
+        .set('upload-metadata', formatUploadMetadataHeader(upload.uploadMetadata));
     }
 
     outgoingMessage
