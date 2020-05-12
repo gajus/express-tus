@@ -8,6 +8,18 @@
 
 [Express](https://expressjs.com/) middleware for [tus protocol](https://tus.io/) (v1.0.0).
 
+---
+
+* [Motivation](#motivation)
+* [API](#api)
+  * [Rejecting file uploads](#rejecting-file-uploads)
+* [Storage](#storage)
+* [CORS](#cors)
+* [Supported extensions](#supported-extensions)
+  * [Creation](#creation)
+  * [Expiration](#expiration)
+  * [Termination](#termination)
+
 ## Motivation
 
 Conceptually, [tus](https://tus.io/) is a great initiative. However, the existing implementations are lacking:
@@ -102,9 +114,11 @@ A custom response can be formatted using `formatErrorResponse` configuration, e.
 
 ```
 
-### Storage
+## Storage
 
-`express-tus` does not provide any default storage engines. Refer to the [example](./src/factories/createMemoryStorage.js), in-memory, storage engine.
+`express-tus` does not provide any default storage engines.
+
+Refer to the [example](./src/factories/createMemoryStorage.js), in-memory, storage engine.
 
 ## CORS
 
