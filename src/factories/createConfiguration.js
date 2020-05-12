@@ -13,6 +13,7 @@ import type {
 
 export default (input: ConfigurationInputType): ConfigurationType => {
   const configuration: Object = {
+    createUpload: input.createUpload,
     getUpload: input.getUpload,
     upload: input.upload,
   };
@@ -43,14 +44,6 @@ export default (input: ConfigurationInputType): ConfigurationType => {
     configuration.createUid = input.createUid;
   } else {
     configuration.createUid = uuid;
-  }
-
-  if (input.createUpload) {
-    configuration.createUpload = input.createUpload;
-  } else {
-    configuration.createUpload = () => {
-      return null;
-    };
   }
 
   return configuration;

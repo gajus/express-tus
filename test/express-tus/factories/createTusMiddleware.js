@@ -3,6 +3,7 @@
 import test from 'ava';
 import sinon from 'sinon';
 import got from 'got';
+import createMemoryStorage from '../../../src/factories/createMemoryStorage';
 import {
   NotFoundError,
 } from '../../../src/errors';
@@ -41,6 +42,7 @@ test('OPTIONS describes tus-extension', async (t) => {
 
 test('empty POST creates a new upload resource', async (t) => {
   const server = await createTestServer({
+    ...createMemoryStorage(),
     createUid: () => {
       return 'foo';
     },
@@ -88,6 +90,7 @@ test('rejected POST produces error response using formatErrorResponse', async (t
 
 test('location is resolved using base-path configuration', async (t) => {
   const server = await createTestServer({
+    ...createMemoryStorage(),
     basePath: '/foo',
     createUid: () => {
       return 'bar';

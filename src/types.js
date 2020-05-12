@@ -54,10 +54,8 @@ export type StorageType = {|
 export type ConfigurationInputType = {|
   +basePath?: string,
   +createUid?: () => MaybePromiseType<string>,
-  +createUpload?: (input: UploadInputType) => MaybePromiseType<UploadType>,
   +formatErrorResponse?: (error: Error) => ResponseType,
-  +getUpload: (uid: string) => MaybePromiseType<UploadType>,
-  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
+  ...StorageType,
 |};
 
 export type ConfigurationType = {|

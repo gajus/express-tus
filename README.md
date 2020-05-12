@@ -24,37 +24,45 @@ import {
   createTusMiddleware,
 } from 'express-tus';
 import type {
+  ConfigurationInputType,
   IncomingMessageType,
   ResponseType,
+  StorageType,
   UploadInputType,
   UploadType,
   UploadUpdateInputType,
 } from 'express-tus';
 
 /**
- * @properties basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
- * @properties createUid Generates unique identifier for each upload request. Defaults to UUID v4.
  * @properties createUpload Approves file upload. Defaults to allowing all uploads.
- * @properties formatErrorResponse Formats HTTP response in case of an error.
  * @properties getUpload Retrieves progress information about an existing upload.
  * @properties upload Applies bytes contained in the incoming message at the given offset.
  */
-type ConfigurationType = {|
-  +basePath?: string,
-  +createUid?: () => Promise<string>,
-  +createUpload?: (input: UploadInputType) => Promise<UploadType>,
-  +formatErrorResponse?: (error: Error) => ResponseType,
-  +getUpload: (uid: string) => Promise<UploadType>,
-  +upload: (input: UploadUpdateInputType) => Promise<UploadType>,
+type StorageType = {|
+  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
+  +createUpload: (input: UploadInputType) => MaybePromiseType<UploadType>,
+  +getUpload: (uid: string) => MaybePromiseType<UploadType>,
 |};
 
-createTusMiddleware(configuration: ConfigurationType);
+/**
+ * @properties basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
+ * @properties createUid Generates unique identifier for each upload request. Defaults to UUID v4.
+ * @properties formatErrorResponse Formats HTTP response in case of an error.
+ */
+type ConfigurationInputType = {|
+  +basePath?: string,
+  +createUid?: () => Promise<string>,
+  +formatErrorResponse?: (error: Error) => ResponseType,
+  ...StorageType,
+|};
+
+createTusMiddleware(configuration: ConfigurationInputType);
 
 ```
 
 ### Rejecting file uploads
 
-`getUpload`, `createUpload`, `upload` can throw an error at any point to reject an upload. By default (see default implementation below), failing `getUpload` produces 404 response and other methods produce 400 response.
+`createUpload`, `upload` and `getUpload` can throw an error at any point to reject an upload. By default (see default implementation below), failing `getUpload` produces 404 response and other methods produce 400 response.
 
 A custom response can be formatted using `formatErrorResponse` configuration, e.g.
 
@@ -78,6 +86,10 @@ A custom response can be formatted using `formatErrorResponse` configuration, e.
 }
 
 ```
+
+### Storage
+
+`express-tus` does not provide any default storage engines. Refer to the [example](./src/factories/createMemoryStorage.js), in-memory, storage engine.
 
 ## CORS
 
