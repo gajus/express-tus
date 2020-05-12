@@ -472,6 +472,24 @@ test('successful HEAD describes meta-data', async (t) => {
   t.is(response.headers['upload-metadata'], 'baz cXV4, foo YmFy');
 });
 
+test('not found upload DELETE responds with 404', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      throw new NotFoundError();
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'DELETE',
+    throwHttpErrors: false,
+  });
+
+  t.is(response.statusCode, 404);
+});
+
 test('successful DELETE responds with 204', async (t) => {
   const deleteUpload = sinon.stub();
 

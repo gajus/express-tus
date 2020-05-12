@@ -230,9 +230,9 @@ export default (configurationInput: ConfigurationInputType) => {
 
   router.delete('/:uid', async (incomingMessage, outgoingMessage) => {
     try {
+      await configuration.getUpload(incomingMessage.params.uid);
       await configuration.delete(incomingMessage.params.uid);
     } catch (error) {
-      console.log('>>>');
       log.error({
         error: serializeError(error),
       }, 'upload not found');
