@@ -41,7 +41,7 @@ test('upload applies bytes contained in the incoming message at the given offset
   const incomingMessage0 = new PassThrough();
 
   setTimeout(() => {
-    incomingMessage0.emit('data', 'bar');
+    incomingMessage0.emit('data', Buffer.from('bar'));
     incomingMessage0.end();
     incomingMessage0.destroy();
   }, 50);
@@ -60,7 +60,7 @@ test('upload applies bytes contained in the incoming message at the given offset
   const incomingMessage1 = new PassThrough();
 
   setTimeout(() => {
-    incomingMessage1.emit('data', 'baz');
+    incomingMessage1.emit('data', Buffer.from('baz'));
     incomingMessage1.end();
     incomingMessage1.destroy();
   }, 50);

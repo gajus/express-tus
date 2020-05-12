@@ -37,6 +37,7 @@
     "ava": "^3.8.2",
     "babel-plugin-istanbul": "^6.0.0",
     "babel-plugin-transform-export-default-name": "^2.0.4",
+    "clone-buffer": "^1.0.0",
     "coveralls": "^3.1.0",
     "eslint": "^7.0.0",
     "eslint-config-canonical": "^19.0.4",

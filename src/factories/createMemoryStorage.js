@@ -49,7 +49,10 @@ export default (configuration?: ConfigurationType): StorageType => {
         const upload = getUpload(input.uid);
 
         input.incomingMessage.on('data', (buffer) => {
-          upload.buffer.write(buffer, upload.uploadOffset);
+          buffer.copy(
+            upload.buffer,
+            upload.uploadOffset,
+          );
 
           upload.uploadOffset += buffer.length;
         });
