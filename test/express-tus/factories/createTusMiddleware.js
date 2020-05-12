@@ -37,7 +37,7 @@ test('OPTIONS describes tus-extension', async (t) => {
     method: 'OPTIONS',
   });
 
-  t.is(response.headers['tus-extension'], 'creation, creation-with-upload, termination');
+  t.is(response.headers['tus-extension'], 'creation, termination');
 });
 
 test('empty POST creates a new upload resource', async (t) => {
