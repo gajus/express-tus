@@ -140,12 +140,19 @@ export default (configurationInput: ConfigurationInputType) => {
 
     const uploadOffset = parseUploadOffsetHeader(incomingMessage.headers['upload-offset']);
 
-    const upload = await configuration.getUpload(incomingMessage.params.uid);
+    let upload;
 
-    if (!upload) {
-      outgoingMessage
-        .status(404)
-        .end('Upload not found.');
+    try {
+      upload = await configuration.getUpload(incomingMessage.params.uid);
+    } catch (error) {
+      log.error({
+        error: serializeError(error),
+      }, 'upload rejected');
+
+      respond(
+        outgoingMessage,
+        configuration.formatErrorResponse(error),
+      );
 
       return;
     }
@@ -188,12 +195,19 @@ export default (configurationInput: ConfigurationInputType) => {
   });
 
   router.head('/:uid', async (incomingMessage, outgoingMessage) => {
-    const upload = await configuration.getUpload(incomingMessage.params.uid);
+    let upload;
 
-    if (!upload) {
-      outgoingMessage
-        .status(404)
-        .end('Upload not found.');
+    try {
+      upload = await configuration.getUpload(incomingMessage.params.uid);
+    } catch (error) {
+      log.error({
+        error: serializeError(error),
+      }, 'upload rejected');
+
+      respond(
+        outgoingMessage,
+        configuration.formatErrorResponse(error),
+      );
 
       return;
     }

@@ -3,6 +3,9 @@
 import test from 'ava';
 import sinon from 'sinon';
 import got from 'got';
+import {
+  NotFoundError,
+} from '../../../src/errors';
 import createTestServer from '../../helpers/createTestServer';
 
 test('OPTIONS successful response produces 204', async (t) => {
@@ -239,7 +242,7 @@ test('PATCH with an unexpected upload-offset produces 409 conflict', async (t) =
 test('PATCH produces 404 if upload is not found', async (t) => {
   const server = await createTestServer({
     getUpload: () => {
-      return null;
+      throw new NotFoundError();
     },
   });
 
@@ -316,7 +319,7 @@ test('PATCH produces error response using formatErrorResponse', async (t) => {
 test('produces 404 upload cannot be found', async (t) => {
   const server = await createTestServer({
     getUpload: () => {
-      return null;
+      throw new NotFoundError();
     },
   });
 
@@ -364,7 +367,7 @@ test('successful PATCH produces 204', async (t) => {
 test('HEAD produces 404 when upload cannot be found', async (t) => {
   const server = await createTestServer({
     getUpload: () => {
-      return null;
+      throw new NotFoundError();
     },
   });
 

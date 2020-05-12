@@ -1,6 +1,9 @@
 // @flow
 
 export {createTusMiddleware} from './factories';
+export {
+  NotFoundError,
+} from './errors';
 export type {
   ConfigurationType,
   IncomingMessageType,

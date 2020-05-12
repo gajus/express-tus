@@ -54,17 +54,25 @@ createTusMiddleware(configuration: ConfigurationType);
 
 ### Rejecting file uploads
 
-`createUpload` and `upload` can throw an error at any point to reject an upload. By default, all uploads are rejected with 400 status code.
+`getUpload`, `createUpload`, `upload` can throw an error at any point to reject an upload. By default (see default implementation below), failing `getUpload` produces 404 response and other methods produce 400 response.
 
 A custom response can be formatted using `formatErrorResponse` configuration, e.g.
 
 ```js
 {
   formatErrorResponse: (error) => {
+    if (error instanceof NotFoundError) {
+      return {
+        body: 'Resource not found.',
+        headers: {},
+        statusCode: 404,
+      };
+    }
+
     return {
-      body: 'Unauthorized',
+      body: 'Request cannot be processed.',
       headers: {},
-      statusCode: 401,
+      statusCode: 400,
     };
   },
 }

@@ -29,3 +29,9 @@ export class UserError extends ExtendableError {
     this.code = code;
   }
 }
+
+export class NotFoundError extends UserError {
+  constructor () {
+    super('Resource not found.', 'RESOURCE_NOT_FOUND');
+  }
+}
