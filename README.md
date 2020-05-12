@@ -71,7 +71,7 @@ type StorageType = {|
   +createUpload: (input: UploadInputType) => MaybePromiseType<UploadType>,
   +delete: (uid: string) => MaybePromiseType<void>,
   +getUpload: (uid: string) => MaybePromiseType<UploadType>,
-  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
+  +upload: (input: UploadUpdateInputType) => MaybePromiseType<void>,
 |};
 
 /**

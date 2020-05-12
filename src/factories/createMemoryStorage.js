@@ -78,8 +78,6 @@ export default (configuration?: ConfigurationType): StorageType => {
       );
 
       upload.uploadOffset += buffer.length;
-
-      return formatUpload(getUpload(input.uid));
     },
   };
 };
