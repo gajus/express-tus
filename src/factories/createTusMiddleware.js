@@ -22,6 +22,13 @@ const log = Logger.child({
   namespace: 'createTusMiddleware',
 });
 
+const respond = (outgoingMessage, response) => {
+  outgoingMessage
+    .set(response.headers)
+    .status(response.statusCode)
+    .end(response.body);
+};
+
 export default (configurationInput: ConfigurationInputType) => {
   const configuration = createConfiguration(configurationInput);
 
@@ -92,12 +99,10 @@ export default (configurationInput: ConfigurationInputType) => {
         error: serializeError(error),
       }, 'upload rejected');
 
-      const response = configuration.formatErrorResponse(error);
-
-      outgoingMessage
-        .set(response.headers)
-        .status(response.statusCode)
-        .end(response.body);
+      respond(
+        outgoingMessage,
+        configuration.formatErrorResponse(error),
+      );
 
       return;
     }
@@ -166,12 +171,10 @@ export default (configurationInput: ConfigurationInputType) => {
         error: serializeError(error),
       }, 'upload rejected');
 
-      const response = configuration.formatErrorResponse(error);
-
-      outgoingMessage
-        .set(response.headers)
-        .status(response.statusCode)
-        .end(response.body);
+      respond(
+        outgoingMessage,
+        configuration.formatErrorResponse(error),
+      );
 
       return;
     }
