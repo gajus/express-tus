@@ -28,10 +28,12 @@ export type UploadInputType = {|
 
 /**
  * @property filePath Path to a temporary file containing the uploaded chunk.
+ * @property uploadLength Size of the uploaded chunk (in bytes).
  */
 export type UploadUpdateInputType = {|
   +filePath: string,
   +uid: string,
+  +uploadLength: number,
   +uploadOffset: number,
 |};
 
@@ -45,7 +47,7 @@ type MaybePromiseType<T> = Promise<T> | T;
 
 /**
  * @property uploadExpires UNIX timestamp (in milliseconds) after which the upload will be deleted.
- * @property uploadLength Indicates the size of the entire upload in bytes.
+ * @property uploadLength Indicates the size of the entire upload (in bytes).
  * @property uploadMetadata Key-value meta-data about the upload.
  * @property uploadOffset Indicates a byte offset within a resource.
  */

@@ -372,17 +372,15 @@ test('produces 404 upload cannot be found', async (t) => {
 });
 
 test('successful PATCH produces 204', async (t) => {
+  const upload = sinon.stub();
+
   const server = await createTestServer({
     getUpload: () => {
       return {
         uploadOffset: 0,
       };
     },
-    upload: () => {
-      return {
-        uploadOffset: 3,
-      };
-    },
+    upload,
   });
 
   const response = await got(server.url + '/foo', {
@@ -397,6 +395,7 @@ test('successful PATCH produces 204', async (t) => {
   });
 
   t.is(response.statusCode, 204);
+  t.is(upload.firstCall.firstArg.uploadLength, 3);
 });
 
 test('HEAD produces 404 when upload cannot be found', async (t) => {
@@ -584,9 +583,7 @@ test('PATCH describes upload-expires', async (t) => {
       };
     },
     upload: () => {
-      return {
-        uploadOffset: 100,
-      };
+
     },
   });
 
@@ -635,9 +632,7 @@ test('validates checksum', async (t) => {
       };
     },
     upload: () => {
-      return {
-        uploadOffset: 3,
-      };
+
     },
   });
 
@@ -664,9 +659,7 @@ test('produces 400 error if checksum algorithm is not supported', async (t) => {
       };
     },
     upload: () => {
-      return {
-        uploadOffset: 3,
-      };
+
     },
   });
 

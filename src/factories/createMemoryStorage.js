@@ -12,6 +12,14 @@ type ConfigurationType = {|
   +storage?: Object,
 |};
 
+const formatUpload = (upload) => {
+  return {
+    uploadLength: upload.uploadLength,
+    uploadMetadata: upload.uploadMetadata,
+    uploadOffset: upload.uploadOffset,
+  };
+};
+
 export default (configuration?: ConfigurationType): StorageType => {
   const storage = configuration && configuration.storage || {};
 
@@ -28,14 +36,6 @@ export default (configuration?: ConfigurationType): StorageType => {
   const deleteUpload = (uid) => {
     // eslint-disable-next-line fp/no-delete
     delete storage[uid];
-  };
-
-  const formatUpload = (upload) => {
-    return {
-      uploadLength: upload.uploadLength,
-      uploadMetadata: upload.uploadMetadata,
-      uploadOffset: upload.uploadOffset,
-    };
   };
 
   return {
