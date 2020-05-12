@@ -19,6 +19,39 @@ import {
 import Logger from '../Logger';
 import createConfiguration from './createConfiguration';
 
+const ALLOW_HEADERS = [
+  'authorization',
+  'content-type',
+  'origin',
+  'tus-resumable',
+  'upload-concat,',
+  'upload-defer-length',
+  'upload-length',
+  'upload-metadata',
+  'upload-offset',
+  'x-http-method-override',
+  'x-request-id',
+  'x-requested-with',
+];
+
+const EXPOSE_HEADERS = [
+  'location',
+  'tus-extension',
+  'tus-max-size',
+  'tus-resumable',
+  'tus-version',
+  'upload-concat',
+  'upload-defer-length',
+  'upload-length',
+  'upload-metadata',
+  'upload-offset',
+];
+
+const SUPPORTED_EXTENSIONS = [
+  'creation',
+  'termination',
+];
+
 const log = Logger.child({
   namespace: 'createTusMiddleware',
 });
@@ -37,11 +70,11 @@ export default (configurationInput: ConfigurationInputType) => {
 
   router.use('/', (incomingMessage, outgoingMessage, next) => {
     outgoingMessage.set({
-      'access-control-allow-headers': 'authorization, content-type, origin, tus-resumable, upload-concat,, upload-defer-length, upload-length, upload-metadata, upload-offset, x-http-method-override, x-request-id, x-requested-with',
-      'access-control-expose-headers': 'location, tus-extension, tus-max-size, tus-resumable, tus-version, upload-concat, upload-defer-length, upload-length, upload-metadata, upload-offset',
+      'access-control-allow-headers': ALLOW_HEADERS.join(', '),
+      'access-control-expose-headers': EXPOSE_HEADERS.join(', '),
       'cache-control': 'no-store',
       connection: 'close',
-      'tus-extension': 'creation, creation-with-upload, termination',
+      'tus-extension': SUPPORTED_EXTENSIONS.join(', '),
       'tus-resumable': '1.0.0',
       'tus-version': '1.0.0',
       'x-content-type-options': 'nosniff',
