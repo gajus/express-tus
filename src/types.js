@@ -42,6 +42,7 @@ type MaybePromiseType<T> = Promise<T> | T;
 
 export type UploadType = {|
   +uploadLength: number,
+  +uploadMetadata: UploadMetadataType,
   +uploadOffset: number,
 |};
 

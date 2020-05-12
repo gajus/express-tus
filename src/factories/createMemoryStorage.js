@@ -27,6 +27,7 @@ export default (configuration?: ConfigurationType): StorageType => {
   const formatUpload = (upload) => {
     return {
       uploadLength: upload.uploadLength,
+      uploadMetadata: upload.uploadMetadata,
       uploadOffset: upload.uploadOffset,
     };
   };
@@ -36,6 +37,7 @@ export default (configuration?: ConfigurationType): StorageType => {
       storage[input.uid] = {
         buffer: Buffer.alloc(input.uploadLength),
         uploadLength: input.uploadLength,
+        uploadMetadata: input.uploadMetadata || {},
         uploadOffset: 0,
       };
 

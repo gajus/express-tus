@@ -390,6 +390,7 @@ test('successful HEAD produces 200', async (t) => {
     getUpload: () => {
       return {
         uploadLength: 100,
+        uploadMetadata: {},
         uploadOffset: 100,
       };
     },
@@ -410,6 +411,7 @@ test('successful HEAD describes upload-length', async (t) => {
     getUpload: () => {
       return {
         uploadLength: 100,
+        uploadMetadata: {},
         uploadOffset: 50,
       };
     },
@@ -430,6 +432,7 @@ test('successful HEAD describes upload-offset', async (t) => {
     getUpload: () => {
       return {
         uploadLength: 100,
+        uploadMetadata: {},
         uploadOffset: 50,
       };
     },
@@ -443,4 +446,28 @@ test('successful HEAD describes upload-offset', async (t) => {
   });
 
   t.is(response.headers['upload-offset'], '50');
+});
+
+test('successful HEAD describes meta-data', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      return {
+        uploadLength: 100,
+        uploadMetadata: {
+          baz: 'qux',
+          foo: 'bar',
+        },
+        uploadOffset: 50,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'HEAD',
+  });
+
+  t.is(response.headers['upload-metadata'], 'baz cXV4, foo YmFy');
 });

@@ -11,6 +11,7 @@ import type {
   ConfigurationInputType,
 } from '../types';
 import {
+  formatUploadMetadataHeader,
   parseUploadLengthHeader,
   parseUploadMetadataHeader,
   parseUploadOffsetHeader,
@@ -210,6 +211,10 @@ export default (configurationInput: ConfigurationInputType) => {
       );
 
       return;
+    }
+
+    if (upload.uploadMetadata) {
+      outgoingMessage.set('upload-metadata', formatUploadMetadataHeader(upload.uploadMetadata));
     }
 
     outgoingMessage
