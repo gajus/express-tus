@@ -16,6 +16,7 @@
 * [Storage](#storage)
 * [CORS](#cors)
 * [Supported extensions](#supported-extensions)
+  * [Checksum](#checksum)
   * [Creation](#creation)
   * [Expiration](#expiration)
   * [Termination](#termination)
