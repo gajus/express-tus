@@ -45,6 +45,7 @@
     "http-terminator": "^2.0.3",
     "husky": "^4.2.5",
     "nyc": "^15.0.1",
+    "semantic-release": "^17.0.7",
     "sinon": "^9.0.2"
   },
   "engines": {
