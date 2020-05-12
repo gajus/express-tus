@@ -33,6 +33,8 @@ Conceptually, [tus](https://tus.io/) is a great initiative. However, the existin
 ## API
 
 ```js
+// @flow
+
 import {
   createTusMiddleware,
 } from 'express-tus';
