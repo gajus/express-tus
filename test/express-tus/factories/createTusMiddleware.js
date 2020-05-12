@@ -37,7 +37,17 @@ test('OPTIONS describes tus-extension', async (t) => {
     method: 'OPTIONS',
   });
 
-  t.is(response.headers['tus-extension'], 'creation, expiration, termination');
+  t.is(response.headers['tus-extension'], 'checksum, creation, expiration, termination');
+});
+
+test('OPTIONS describes tus-checksum-algorithm', async (t) => {
+  const server = await createTestServer({});
+
+  const response = await got(server.url, {
+    method: 'OPTIONS',
+  });
+
+  t.is(response.headers['tus-checksum-algorithm'], 'crc32, md5, sha1, sha256');
 });
 
 test('empty POST creates a new upload resource', async (t) => {
@@ -370,12 +380,13 @@ test('successful PATCH produces 204', async (t) => {
     },
     upload: () => {
       return {
-        uploadOffset: 100,
+        uploadOffset: 3,
       };
     },
   });
 
   const response = await got(server.url + '/foo', {
+    body: Buffer.from('bar'),
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
@@ -614,4 +625,120 @@ test('HEAD describes upload-expires', async (t) => {
   });
 
   t.is(new Date(response.headers['upload-expires']).getTime(), Math.floor(uploadExpires / 1000) * 1000);
+});
+
+test('validates checksum', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      return {
+        uploadOffset: 0,
+      };
+    },
+    upload: () => {
+      return {
+        uploadOffset: 3,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    body: Buffer.from('bar'),
+    headers: {
+      'content-type': 'application/offset+octet-stream',
+      'tus-resumable': '1.0.0',
+      'upload-checksum': 'sha1 Ys23Ag/5IOWqZCw9QGaVDdHwH00=',
+      'upload-length': '100',
+      'upload-offset': '0',
+    },
+    method: 'PATCH',
+  });
+
+  t.is(response.statusCode, 204);
+});
+
+test('produces 400 error if checksum algorithm is not supported', async (t) => {
+  const server = await createTestServer({
+    getUpload: () => {
+      return {
+        uploadOffset: 0,
+      };
+    },
+    upload: () => {
+      return {
+        uploadOffset: 3,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    body: Buffer.from('bar'),
+    headers: {
+      'content-type': 'application/offset+octet-stream',
+      'tus-resumable': '1.0.0',
+      'upload-checksum': 'sha512 Ys23Ag/5IOWqZCw9QGaVDdHwH00=',
+      'upload-length': '100',
+      'upload-offset': '0',
+    },
+    method: 'PATCH',
+    throwHttpErrors: false,
+  });
+
+  t.is(response.statusCode, 400);
+});
+
+test('discards chunk if checksum does not match', async (t) => {
+  const server = await createTestServer({
+    ...createMemoryStorage(),
+    createUid: () => {
+      return 'foo';
+    },
+  });
+
+  await got(server.url, {
+    headers: {
+      'tus-resumable': '1.0.0',
+      'upload-length': '6',
+    },
+    method: 'POST',
+  });
+
+  const response1 = await got(server.url + '/foo', {
+    body: Buffer.from('bar'),
+    headers: {
+      'content-type': 'application/offset+octet-stream',
+      'tus-resumable': '1.0.0',
+      'upload-checksum': 'sha1 Ys23Ag/5IOWqZCw9QGaVDdHwH00=',
+      'upload-length': '3',
+      'upload-offset': '0',
+    },
+    method: 'PATCH',
+  });
+
+  t.is(response1.statusCode, 204);
+
+  const response2 = await got(server.url + '/foo', {
+    body: Buffer.from('baz'),
+    headers: {
+      'content-type': 'application/offset+octet-stream',
+      'tus-resumable': '1.0.0',
+      'upload-checksum': 'sha1 Ys23Ag/5IOWqZCw9QGaVDdHwH00=',
+      'upload-length': '3',
+      'upload-offset': '3',
+    },
+    method: 'PATCH',
+    throwHttpErrors: false,
+  });
+
+  t.is(response2.statusCode, 460);
+
+  const response3 = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'HEAD',
+  });
+
+  t.is(response3.statusCode, 200);
+  t.is(response3.headers['upload-length'], '6');
+  t.is(response3.headers['upload-offset'], '3');
 });

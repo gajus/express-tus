@@ -1,5 +1,6 @@
 // @flow
 
+import fs from 'fs';
 import {
   NotFoundError,
 } from '../errors';
@@ -67,26 +68,18 @@ export default (configuration?: ConfigurationType): StorageType => {
       return formatUpload(upload);
     },
     upload: (input) => {
-      return new Promise((resolve, reject) => {
-        const upload = getUpload(input.uid);
+      const upload = getUpload(input.uid);
 
-        input.incomingMessage.on('data', (buffer) => {
-          buffer.copy(
-            upload.buffer,
-            upload.uploadOffset,
-          );
+      const buffer = fs.readFileSync(input.filePath);
 
-          upload.uploadOffset += buffer.length;
-        });
+      buffer.copy(
+        upload.buffer,
+        upload.uploadOffset,
+      );
 
-        input.incomingMessage.on('end', () => {
-          resolve(formatUpload(getUpload(input.uid)));
-        });
+      upload.uploadOffset += buffer.length;
 
-        input.incomingMessage.on('error', (error) => {
-          reject(error);
-        });
-      });
+      return formatUpload(getUpload(input.uid));
     },
   };
 };

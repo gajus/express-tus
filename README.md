@@ -128,6 +128,17 @@ Use [`cors`](https://www.npmjs.com/package/cors) to configure the necessary head
 
 ## Supported extensions
 
+### Checksum
+
+[creation](https://tus.io/protocols/resumable-upload.html#checksum)
+
+Supported algorithms:
+
+* crc32
+* md5
+* sha1
+* sha256
+
 ### Creation
 
 [creation](https://tus.io/protocols/resumable-upload.html#creation)

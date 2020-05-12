@@ -1,8 +1,9 @@
 // @flow
 
+import fs from 'fs';
 import {
-  PassThrough,
-} from 'stream';
+  tmpNameSync,
+} from 'tmp';
 import test from 'ava';
 import createMemoryStorage from '../../../src/factories/createMemoryStorage';
 
@@ -27,6 +28,14 @@ test('createUpload creates an empty upload', async (t) => {
   });
 });
 
+const createChunk = (buffer) => {
+  const temporaryFileName = tmpNameSync();
+
+  fs.writeFileSync(temporaryFileName, buffer);
+
+  return temporaryFileName;
+};
+
 test('upload applies bytes contained in the incoming message at the given offset', async (t) => {
   const storage = {};
 
@@ -39,16 +48,8 @@ test('upload applies bytes contained in the incoming message at the given offset
     uploadLength: 6,
   });
 
-  const incomingMessage0 = new PassThrough();
-
-  setTimeout(() => {
-    incomingMessage0.emit('data', Buffer.from('bar'));
-    incomingMessage0.end();
-    incomingMessage0.destroy();
-  }, 50);
-
   await memoryStorage.upload({
-    incomingMessage: incomingMessage0,
+    filePath: createChunk(Buffer.from('bar')),
     uid: 'foo',
     uploadOffset: 0,
   });
@@ -59,16 +60,8 @@ test('upload applies bytes contained in the incoming message at the given offset
     uploadOffset: 3,
   });
 
-  const incomingMessage1 = new PassThrough();
-
-  setTimeout(() => {
-    incomingMessage1.emit('data', Buffer.from('baz'));
-    incomingMessage1.end();
-    incomingMessage1.destroy();
-  }, 50);
-
   await memoryStorage.upload({
-    incomingMessage: incomingMessage1,
+    filePath: createChunk(Buffer.from('bar')),
     uid: 'foo',
     uploadOffset: 3,
   });

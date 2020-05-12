@@ -26,8 +26,11 @@ export type UploadInputType = {|
   +uploadMetadata: UploadMetadataType,
 |};
 
+/**
+ * @property filePath Path to a temporary file containing the uploaded chunk.
+ */
 export type UploadUpdateInputType = {|
-  +incomingMessage: IncomingMessageType,
+  +filePath: string,
   +uid: string,
   +uploadOffset: number,
 |};

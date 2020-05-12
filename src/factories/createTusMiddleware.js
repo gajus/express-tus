@@ -1,8 +1,21 @@
 // @flow
 
+import stream from 'stream';
+import {
+  promisify,
+} from 'util';
+import {
+  createWriteStream,
+} from 'fs';
+import {
+  createHash,
+} from 'crypto';
 import {
   resolve as resolveUrl,
 } from 'url';
+import {
+  tmpNameSync,
+} from 'tmp';
 import {
   serializeError,
 } from 'serialize-error';
@@ -12,12 +25,15 @@ import type {
 } from '../types';
 import {
   formatUploadMetadataHeader,
+  parseUploadChecksumHeader,
   parseUploadLengthHeader,
   parseUploadMetadataHeader,
   parseUploadOffsetHeader,
 } from '../utilities';
 import Logger from '../Logger';
 import createConfiguration from './createConfiguration';
+
+const pipeline = promisify(stream.pipeline);
 
 const ALLOW_HEADERS = [
   'authorization',
@@ -36,6 +52,7 @@ const ALLOW_HEADERS = [
 
 const EXPOSE_HEADERS = [
   'location',
+  'tus-checksum-algorithm',
   'tus-extension',
   'tus-max-size',
   'tus-resumable',
@@ -47,7 +64,15 @@ const EXPOSE_HEADERS = [
   'upload-offset',
 ];
 
+const SUPPORTED_CHECKSUM_ALGORITHMS = [
+  'crc32',
+  'md5',
+  'sha1',
+  'sha256',
+];
+
 const SUPPORTED_EXTENSIONS = [
+  'checksum',
   'creation',
   'expiration',
   'termination',
@@ -75,6 +100,7 @@ export default (configurationInput: ConfigurationInputType) => {
       'access-control-expose-headers': EXPOSE_HEADERS.join(', '),
       'cache-control': 'no-store',
       connection: 'close',
+      'tus-checksum-algorithm': SUPPORTED_CHECKSUM_ALGORITHMS.join(', '),
       'tus-extension': SUPPORTED_EXTENSIONS.join(', '),
       'tus-resumable': '1.0.0',
       'tus-version': '1.0.0',
@@ -207,9 +233,52 @@ export default (configurationInput: ConfigurationInputType) => {
       return;
     }
 
+    const temporaryFilePath = tmpNameSync();
+
+    const temporaryFileStream = createWriteStream(temporaryFilePath);
+
+    if (incomingMessage.headers['upload-checksum']) {
+      const checksum = parseUploadChecksumHeader(incomingMessage.headers['upload-checksum']);
+
+      if (!SUPPORTED_CHECKSUM_ALGORITHMS.includes(checksum.algorithm)) {
+        outgoingMessage
+          .status(400)
+          .end('Unsupported checksum algorithm.');
+
+        return;
+      }
+
+      const hash = createHash(checksum.algorithm);
+
+      await pipeline(
+        incomingMessage,
+        async function *(chunks) {
+          for await (const chunk of chunks) {
+            hash.update(chunk);
+
+            yield chunk;
+          }
+        },
+        temporaryFileStream,
+      );
+
+      if (hash.digest('base64') !== checksum.checksum) {
+        outgoingMessage
+          .status(460)
+          .end('Checksum mismatch.');
+
+        return;
+      }
+    } else {
+      await pipeline(
+        incomingMessage,
+        temporaryFileStream,
+      );
+    }
+
     try {
       await configuration.upload({
-        incomingMessage,
+        filePath: temporaryFilePath,
         uid: incomingMessage.params.uid,
         uploadOffset: upload.uploadOffset,
       });
