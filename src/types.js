@@ -27,10 +27,12 @@ export type UploadInputType = {|
 |};
 
 /**
+ * @property chunkLength Size of the uploaded chunk (in bytes).
  * @property filePath Path to a temporary file containing the uploaded chunk.
- * @property uploadLength Size of the uploaded chunk (in bytes).
+ * @property uploadLength Indicates the size of the entire upload (in bytes).
  */
 export type UploadUpdateInputType = {|
+  +chunkLength: number,
   +filePath: string,
   +uid: string,
   +uploadLength: number,

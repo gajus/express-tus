@@ -237,7 +237,7 @@ export default (configurationInput: ConfigurationInputType) => {
 
     const temporaryFileStream = createWriteStream(temporaryFilePath);
 
-    let uploadLength = 0;
+    let chunkLength = 0;
 
     if (incomingMessage.headers['upload-checksum']) {
       const checksum = parseUploadChecksumHeader(incomingMessage.headers['upload-checksum']);
@@ -256,7 +256,7 @@ export default (configurationInput: ConfigurationInputType) => {
         incomingMessage,
         async function *(chunks) {
           for await (const chunk of chunks) {
-            uploadLength += chunk.length;
+            chunkLength += chunk.length;
 
             hash.update(chunk);
 
@@ -278,7 +278,7 @@ export default (configurationInput: ConfigurationInputType) => {
         incomingMessage,
         async function *(chunks) {
           for await (const chunk of chunks) {
-            uploadLength += chunk.length;
+            chunkLength += chunk.length;
 
             yield chunk;
           }
@@ -289,9 +289,10 @@ export default (configurationInput: ConfigurationInputType) => {
 
     try {
       await configuration.upload({
+        chunkLength,
         filePath: temporaryFilePath,
         uid: incomingMessage.params.uid,
-        uploadLength,
+        uploadLength: upload.uploadLength,
         uploadOffset: upload.uploadOffset,
       });
     } catch (error) {

@@ -377,6 +377,7 @@ test('successful PATCH produces 204', async (t) => {
   const server = await createTestServer({
     getUpload: () => {
       return {
+        uploadLength: 100,
         uploadOffset: 0,
       };
     },
@@ -395,7 +396,8 @@ test('successful PATCH produces 204', async (t) => {
   });
 
   t.is(response.statusCode, 204);
-  t.is(upload.firstCall.firstArg.uploadLength, 3);
+  t.is(upload.firstCall.firstArg.uploadLength, 100);
+  t.is(upload.firstCall.firstArg.chunkLength, 3);
 });
 
 test('HEAD produces 404 when upload cannot be found', async (t) => {
