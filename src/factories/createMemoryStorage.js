@@ -43,6 +43,13 @@ export default (configuration?: ConfigurationType): StorageType => {
 
       return formatUpload(getUpload(input.uid));
     },
+    delete: (uid) => {
+      // Triggers error if upload does not exist.
+      if (getUpload(uid)) {
+        // eslint-disable-next-line fp/no-delete
+        delete storage[uid];
+      }
+    },
     getUpload: (uid) => {
       return formatUpload(getUpload(uid));
     },

@@ -14,6 +14,7 @@ import type {
 export default (input: ConfigurationInputType): ConfigurationType => {
   const configuration: Object = {
     createUpload: input.createUpload,
+    delete: input.delete,
     getUpload: input.getUpload,
     upload: input.upload,
   };

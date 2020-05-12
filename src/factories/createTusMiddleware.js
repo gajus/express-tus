@@ -181,7 +181,7 @@ export default (configurationInput: ConfigurationInputType) => {
     } catch (error) {
       log.error({
         error: serializeError(error),
-      }, 'upload rejected');
+      }, 'upload not found');
 
       respond(
         outgoingMessage,
@@ -228,6 +228,28 @@ export default (configurationInput: ConfigurationInputType) => {
       .end();
   });
 
+  router.delete('/:uid', async (incomingMessage, outgoingMessage) => {
+    try {
+      await configuration.delete(incomingMessage.params.uid);
+    } catch (error) {
+      console.log('>>>');
+      log.error({
+        error: serializeError(error),
+      }, 'upload not found');
+
+      respond(
+        outgoingMessage,
+        configuration.formatErrorResponse(error),
+      );
+
+      return;
+    }
+
+    outgoingMessage
+      .status(204)
+      .end();
+  });
+
   router.head('/:uid', async (incomingMessage, outgoingMessage) => {
     let upload;
 
@@ -236,7 +258,7 @@ export default (configurationInput: ConfigurationInputType) => {
     } catch (error) {
       log.error({
         error: serializeError(error),
-      }, 'upload rejected');
+      }, 'upload not found');
 
       respond(
         outgoingMessage,

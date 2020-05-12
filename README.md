@@ -34,20 +34,22 @@ import type {
 } from 'express-tus';
 
 /**
- * @properties createUpload Approves file upload. Defaults to allowing all uploads.
- * @properties getUpload Retrieves progress information about an existing upload.
- * @properties upload Applies bytes contained in the incoming message at the given offset.
+ * @property createUpload Approves file upload. Defaults to allowing all uploads.
+ * @property delete Deletes upload.
+ * @property getUpload Retrieves progress information about an existing upload.
+ * @property upload Applies bytes contained in the incoming message at the given offset.
  */
 type StorageType = {|
-  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
   +createUpload: (input: UploadInputType) => MaybePromiseType<UploadType>,
+  +delete: (uid: string) => MaybePromiseType<void>,
   +getUpload: (uid: string) => MaybePromiseType<UploadType>,
+  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
 |};
 
 /**
- * @properties basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
- * @properties createUid Generates unique identifier for each upload request. Defaults to UUID v4.
- * @properties formatErrorResponse Formats HTTP response in case of an error.
+ * @property basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
+ * @property createUid Generates unique identifier for each upload request. Defaults to UUID v4.
+ * @property formatErrorResponse Formats HTTP response in case of an error.
  */
 type ConfigurationInputType = {|
   +basePath?: string,
@@ -96,3 +98,8 @@ A custom response can be formatted using `formatErrorResponse` configuration, e.
 `express-tus` configures [`access-control-allow-headers`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers) and [`access-control-expose-headers`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers), but does not configure [`access-control-allow-origin`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin).
 
 Use [`cors`](https://www.npmjs.com/package/cors) to configure the necessary headers for cross-site communication.
+
+## Supported extensions
+
+* [creation](https://tus.io/protocols/resumable-upload.html#creation)
+* [termination](https://tus.io/protocols/resumable-upload.html#termination)

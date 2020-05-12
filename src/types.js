@@ -47,9 +47,10 @@ export type UploadType = {|
 |};
 
 export type StorageType = {|
-  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
   +createUpload: (input: UploadInputType) => MaybePromiseType<UploadType>,
+  +delete: (uid: string) => MaybePromiseType<void>,
   +getUpload: (uid: string) => MaybePromiseType<UploadType>,
+  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
 |};
 
 export type ConfigurationInputType = {|

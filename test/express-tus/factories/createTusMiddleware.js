@@ -471,3 +471,27 @@ test('successful HEAD describes meta-data', async (t) => {
 
   t.is(response.headers['upload-metadata'], 'baz cXV4, foo YmFy');
 });
+
+test('successful DELETE responds with 204', async (t) => {
+  const deleteUpload = sinon.stub();
+
+  const server = await createTestServer({
+    delete: deleteUpload,
+    getUpload: () => {
+      return {
+        uploadLength: 100,
+        uploadOffset: 0,
+      };
+    },
+  });
+
+  const response = await got(server.url + '/foo', {
+    headers: {
+      'tus-resumable': '1.0.0',
+    },
+    method: 'DELETE',
+  });
+
+  t.is(response.statusCode, 204);
+  t.is(deleteUpload.firstCall.firstArg, 'foo');
+});
