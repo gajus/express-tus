@@ -19,16 +19,17 @@ type HeadersType = {|
 
 export type IncomingMessageType = HttpIncomingMessage | HttpsIncomingMessage;
 
-type ShallowIncomingMessageType = {|
-  +headers: HeadersType,
-  +url: string,
-|};
-
-type UploadInputType = {|
-  +incomingMessage: ShallowIncomingMessageType,
+export type UploadInputType = {|
+  +incomingMessage: IncomingMessageType,
   +uid: string,
   +uploadLength: number,
   +uploadMetadata: UploadMetadataType,
+|};
+
+export type UploadUpdateInputType = {|
+  +incomingMessage: IncomingMessageType,
+  +uid: string,
+  +uploadOffset: number,
 |};
 
 export type ResponseType = {|
@@ -45,7 +46,7 @@ export type UploadType = {|
 |};
 
 export type StorageType = {|
-  +upload: (uid: string, uploadOffset: number, incomingMessage: IncomingMessageType) => Promise<UploadType>,
+  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
   +createUpload: (input: UploadInputType) => MaybePromiseType<UploadType>,
   +getUpload: (uid: string) => MaybePromiseType<UploadType>,
 |};
@@ -56,7 +57,7 @@ export type ConfigurationInputType = {|
   +createUpload?: (input: UploadInputType) => MaybePromiseType<UploadType>,
   +formatErrorResponse?: (error: Error) => ResponseType,
   +getUpload: (uid: string) => MaybePromiseType<UploadType>,
-  +upload: (uid: string, uploadOffset: number, incomingMessage: IncomingMessageType) => MaybePromiseType<UploadType>,
+  +upload: (input: UploadUpdateInputType) => MaybePromiseType<UploadType>,
 |};
 
 export type ConfigurationType = {|

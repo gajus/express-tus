@@ -24,9 +24,11 @@ import {
   createTusMiddleware,
 } from 'express-tus';
 import type {
-  UploadType,
   IncomingMessageType,
   ResponseType,
+  UploadInputType,
+  UploadType,
+  UploadUpdateInputType,
 } from 'express-tus';
 
 /**
@@ -43,11 +45,7 @@ type ConfigurationType = {|
   +createUpload?: (input: UploadInputType) => Promise<UploadType>,
   +formatErrorResponse?: (error: Error) => ResponseType,
   +getUpload: (uid: string) => Promise<UploadType>,
-  +upload: (
-    uid: string,
-    uploadOffset: number,
-    incomingMessage: IncomingMessageType,
-  ) => Promise<UploadType>,
+  +upload: (input: UploadUpdateInputType) => Promise<UploadType>,
 |};
 
 createTusMiddleware(configuration: ConfigurationType);

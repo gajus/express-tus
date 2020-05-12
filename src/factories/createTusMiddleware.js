@@ -82,10 +82,7 @@ export default (configurationInput: ConfigurationInputType) => {
 
     try {
       await configuration.createUpload({
-        incomingMessage: {
-          headers: incomingMessage.headers,
-          url: incomingMessage.url,
-        },
+        incomingMessage,
         uid,
         uploadLength,
         uploadMetadata,
@@ -159,11 +156,11 @@ export default (configurationInput: ConfigurationInputType) => {
     let nextUpload;
 
     try {
-      nextUpload = await configuration.upload(
-        incomingMessage.params.uid,
-        upload.uploadOffset,
+      nextUpload = await configuration.upload({
         incomingMessage,
-      );
+        uid: incomingMessage.params.uid,
+        uploadOffset: upload.uploadOffset,
+      });
     } catch (error) {
       log.error({
         error: serializeError(error),
