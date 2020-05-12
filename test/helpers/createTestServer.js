@@ -12,6 +12,8 @@ type HttpServerType = {|
 export default async (configuration): Promise<HttpServerType> => {
   const app = express();
 
+  app.disable('x-powered-by');
+
   app.use(createTusMiddleware(configuration));
 
   // eslint-disable-next-line no-unused-vars
