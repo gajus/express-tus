@@ -16,6 +16,18 @@ export default (input: ConfigurationInputType): ConfigurationType => {
 
   configuration.basePath = input.basePath || '/';
 
+  if (input.formatErrorResponse) {
+    configuration.formatErrorResponse = input.formatErrorResponse;
+  } else {
+    configuration.formatErrorResponse = () => {
+      return {
+        body: 'Request cannot be processed.',
+        headers: {},
+        statusCode: 400,
+      };
+    };
+  }
+
   if (input.createUid) {
     configuration.createUid = input.createUid;
   } else {

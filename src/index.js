@@ -4,6 +4,6 @@ export {createTusMiddleware} from './factories';
 export type {
   ConfigurationType,
   IncomingMessageType,
-  RejectionResponseType,
+  ResponseType,
   UploadType,
 } from './types';

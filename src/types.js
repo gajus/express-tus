@@ -31,7 +31,7 @@ type UploadInputType = {|
   +uploadMetadata: UploadMetadataType,
 |};
 
-export type RejectionResponseType = {|
+export type ResponseType = {|
   +body: string,
   +headers: HeadersType,
   +statusCode: number,
@@ -44,18 +44,24 @@ export type UploadType = {|
   +uploadOffset: number,
 |};
 
-export type ConfigurationInputType = {|
+export type StorageType = {|
   +upload: (uid: string, uploadOffset: number, incomingMessage: IncomingMessageType) => Promise<UploadType>,
-  +basePath?: string,
-  +createUid?: () => MaybePromiseType<string>,
-  +createUpload?: (input: UploadInputType) => MaybePromiseType<RejectionResponseType | null>,
+  +createUpload: (input: UploadInputType) => MaybePromiseType<UploadType>,
   +getUpload: (uid: string) => MaybePromiseType<UploadType>,
 |};
 
+export type ConfigurationInputType = {|
+  +basePath?: string,
+  +createUid?: () => MaybePromiseType<string>,
+  +createUpload?: (input: UploadInputType) => MaybePromiseType<UploadType>,
+  +formatErrorResponse?: (error: Error) => ResponseType,
+  +getUpload: (uid: string) => MaybePromiseType<UploadType>,
+  +upload: (uid: string, uploadOffset: number, incomingMessage: IncomingMessageType) => MaybePromiseType<UploadType>,
+|};
+
 export type ConfigurationType = {|
-  +upload: (uid: string, uploadOffset: number, incomingMessage: IncomingMessageType) => Promise<UploadType>,
   +basePath: string,
   +createUid: () => MaybePromiseType<string>,
-  +createUpload: (input: UploadInputType) => MaybePromiseType<RejectionResponseType | null>,
-  +getUpload: (uid: string) => MaybePromiseType<UploadType>,
+  +formatErrorResponse: (error: Error) => ResponseType,
+  ...StorageType,
 |};

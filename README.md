@@ -26,20 +26,22 @@ import {
 import type {
   UploadType,
   IncomingMessageType,
-  RejectionResponseType,
+  ResponseType,
 } from 'express-tus';
 
 /**
  * @properties basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
  * @properties createUid Generates unique identifier for each upload request. Defaults to UUID v4.
- * @properties createUpload Approves (null result) or rejects (RejectionResponseType result) file upload. Defaults to allowing all uploads.
+ * @properties createUpload Approves file upload. Defaults to allowing all uploads.
+ * @properties formatErrorResponse Formats HTTP response in case of an error.
  * @properties getUpload Retrieves progress information about an existing upload.
  * @properties upload Applies bytes contained in the incoming message at the given offset.
  */
 type ConfigurationType = {|
   +basePath?: string,
   +createUid?: () => Promise<string>,
-  +createUpload?: (input: UploadInputType) => Promise<RejectionResponseType | null>,
+  +createUpload?: (input: UploadInputType) => Promise<UploadType>,
+  +formatErrorResponse?: (error: Error) => ResponseType,
   +getUpload: (uid: string) => Promise<UploadType>,
   +upload: (
     uid: string,
@@ -49,6 +51,25 @@ type ConfigurationType = {|
 |};
 
 createTusMiddleware(configuration: ConfigurationType);
+
+```
+
+### Rejecting file uploads
+
+`createUpload` and `upload` can throw an error at any point to reject an upload. By default, all uploads are rejected with 400 status code.
+
+A custom response can be formatted using `formatErrorResponse` configuration, e.g.
+
+```js
+{
+  formatErrorResponse: (error) => {
+    return {
+      body: 'Unauthorized',
+      headers: {},
+      statusCode: 401,
+    };
+  },
+}
 
 ```
 

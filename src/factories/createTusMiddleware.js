@@ -3,6 +3,9 @@
 import {
   resolve as resolveUrl,
 } from 'url';
+import {
+  serializeError,
+} from 'serialize-error';
 import createRouter from 'express-promise-router';
 import type {
   ConfigurationInputType,
@@ -12,7 +15,12 @@ import {
   parseUploadMetadataHeader,
   parseUploadOffsetHeader,
 } from '../utilities';
+import Logger from '../Logger';
 import createConfiguration from './createConfiguration';
+
+const log = Logger.child({
+  namespace: 'createTusMiddleware',
+});
 
 export default (configurationInput: ConfigurationInputType) => {
   const configuration = createConfiguration(configurationInput);
@@ -72,21 +80,27 @@ export default (configurationInput: ConfigurationInputType) => {
 
     const uid = await configuration.createUid();
 
-    const maybeRejectionResponse = await configuration.createUpload({
-      incomingMessage: {
-        headers: incomingMessage.headers,
-        url: incomingMessage.url,
-      },
-      uid,
-      uploadLength,
-      uploadMetadata,
-    });
+    try {
+      await configuration.createUpload({
+        incomingMessage: {
+          headers: incomingMessage.headers,
+          url: incomingMessage.url,
+        },
+        uid,
+        uploadLength,
+        uploadMetadata,
+      });
+    } catch (error) {
+      log.error({
+        error: serializeError(error),
+      }, 'upload rejected');
 
-    if (maybeRejectionResponse) {
+      const response = configuration.formatErrorResponse(error);
+
       outgoingMessage
-        .set(maybeRejectionResponse.headers)
-        .status(maybeRejectionResponse.statusCode)
-        .end(maybeRejectionResponse.body);
+        .set(response.headers)
+        .status(response.statusCode)
+        .end(response.body);
 
       return;
     }
@@ -142,11 +156,28 @@ export default (configurationInput: ConfigurationInputType) => {
       return;
     }
 
-    const nextUpload = await configuration.upload(
-      incomingMessage.params.uid,
-      upload.uploadOffset,
-      incomingMessage,
-    );
+    let nextUpload;
+
+    try {
+      nextUpload = await configuration.upload(
+        incomingMessage.params.uid,
+        upload.uploadOffset,
+        incomingMessage,
+      );
+    } catch (error) {
+      log.error({
+        error: serializeError(error),
+      }, 'upload rejected');
+
+      const response = configuration.formatErrorResponse(error);
+
+      outgoingMessage
+        .set(response.headers)
+        .status(response.statusCode)
+        .end(response.body);
+
+      return;
+    }
 
     outgoingMessage
       .set({
