@@ -64,6 +64,7 @@
     "resumable"
   ],
   "license": "BSD-3-Clause",
+  "main": "./dist/index.js",
   "name": "express-tus",
   "nyc": {
     "all": true,
