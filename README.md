@@ -20,6 +20,8 @@
   * [Creation](#creation)
   * [Expiration](#expiration)
   * [Termination](#termination)
+* [Implementation considerations](#implementation-considerations)
+  * [Restrict minimum chunk size](#restrict-minimum-chunk-size)
 
 ## Motivation
 
@@ -155,3 +157,28 @@ Note that it is the responsibility of the storage engine to detect and delete ex
 ### Termination
 
 [termination](https://tus.io/protocols/resumable-upload.html#termination)
+
+## Implementation considerations
+
+### Restrict minimum chunk size
+
+tus protocol does not dictate any restrictions about individual chunk size. However, this leaves your service open to DDoS attack.
+
+When implementing `upload` method, restrict each chunk to a desired minimum size (except the last one), e.g.
+
+```js
+{
+  // [..]
+
+  upload: async (input) => {
+    if (input.uploadOffset + input.chunkLength < input.uploadLength && input.chunkLength < MINIMUM_CHUNK_SIZE) {
+      throw new UserError('Each chunk must be at least ' + filesize(MINIMUM_CHUNK_SIZE) + ' (except the last one).');
+    }
+
+    // [..]
+  },
+}
+
+```
+
+Google restricts their uploads to a [minimum of 256 KB per chunk](https://cloud.google.com/storage/docs/performing-resumable-uploads#json-api), which is a reasonable default. However, even with 256 KB restriction, a 1 GB upload would result in 3906 write operations. Therefore, if you are allowing large file uploads, adjust the minimum chunk size dynamically based on the input size.
