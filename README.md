@@ -21,6 +21,7 @@
   * [Expiration](#expiration)
   * [Termination](#termination)
 * [Implementation considerations](#implementation-considerations)
+  * [Resumable uploads using Google Storage](#resumable-uploads-using-google-storage)
   * [Restrict minimum chunk size](#restrict-minimum-chunk-size)
 
 ## Motivation
@@ -159,6 +160,14 @@ Note that it is the responsibility of the storage engine to detect and delete ex
 [termination](https://tus.io/protocols/resumable-upload.html#termination)
 
 ## Implementation considerations
+
+### Resumable uploads using Google Storage
+
+One of the original goals for writing `express-tus` was to have an abstraction that will allow to uploads files to Google Storage using their [resumable uploads protocol](https://cloud.google.com/storage/docs/performing-resumable-uploads). However, it turns out that, due to [arbitrary restrictions](https://github.com/googleapis/nodejs-storage/issues/1192#issuecomment-629042176) imposed by their API, this is not possible.
+
+Specifically, the challenge is that Google resumable uploads (1) do not guarantee that they will upload the entire chunk that you send to the server and (2) do not allow to upload individual chunks lesser than 256 KB. Therefore, if you receive upload chunks on a different service instances, then individual instances are not going to be able to complete their upload without being aware of the chunks submitted to the other instances.
+
+The only [workaround](https://github.com/googleapis/nodejs-storage/issues/1192#issuecomment-628873851) is to upload chunks individually (as separate files) and then using Google Cloud API to concatenate files. However, this approach results in [significant cost increase](https://github.com/googleapis/gcs-resumable-upload/issues/132#issuecomment-603493772).
 
 ### Restrict minimum chunk size
 
