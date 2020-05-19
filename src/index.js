@@ -5,7 +5,9 @@ export {
   createMemoryStorage,
 } from './factories';
 export {
+  ExpressTusError,
   NotFoundError,
+  UserError,
 } from './errors';
 export type {
   ConfigurationInputType,

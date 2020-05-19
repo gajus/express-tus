@@ -14,6 +14,7 @@
 * [API](#api)
   * [Rejecting file uploads](#rejecting-file-uploads)
 * [Storage](#storage)
+  * [Memory Storage](#memory-storage)
 * [CORS](#cors)
 * [Supported extensions](#supported-extensions)
   * [Checksum](#checksum)
@@ -80,12 +81,10 @@ type StorageType = {|
 /**
  * @property basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
  * @property createUid Generates unique identifier for each upload request. Defaults to UUID v4.
- * @property formatErrorResponse Formats HTTP response in case of an error.
  */
 type ConfigurationInputType = {|
   +basePath?: string,
   +createUid?: () => Promise<string>,
-  +formatErrorResponse?: (error: Error) => ResponseType,
   ...StorageType,
 |};
 
@@ -95,34 +94,58 @@ createTusMiddleware(configuration: ConfigurationInputType);
 
 ### Rejecting file uploads
 
-`createUpload`, `upload` and `getUpload` can throw an error at any point to reject an upload. By default (see default implementation below), failing `getUpload` produces 404 response and other methods produce 400 response.
+`createUpload`, `upload` and `getUpload` can throw an error at any point to reject an upload. The error will propagate through usual express error handling path.
 
-A custom response can be formatted using `formatErrorResponse` configuration, e.g.
+As an example, this is what [Memory Storage](#memory-storage) errors handler could be implemented:
 
 ```js
-{
-  formatErrorResponse: (error) => {
+import {
+  createMemoryStorage,
+  createTusMiddleware,
+  ExpressTusError,
+  NotFoundError,
+  UserError,
+} from 'express-tus';
+
+app.use(createTusMiddleware({
+  ...createMemoryStorage(),
+}));
+
+app.use((error, incomingMessage, outgoingMessage, next) => {
+  if (error instanceof ExpressTusError) {
     if (error instanceof NotFoundError) {
-      return {
-        body: 'Resource not found.',
-        headers: {},
-        statusCode: 404,
-      };
+      outgoingMessage
+        .status(404)
+        .end('Upload not found.');
+
+      return;
     }
 
-    return {
-      body: 'Request cannot be processed.',
-      headers: {},
-      statusCode: 400,
-    };
-  },
-}
+    if (error instanceof UserError) {
+      outgoingMessage
+        .status(500)
+        .end(error.message);
+
+      return;
+    }
+
+    outgoingMessage
+      .status(500)
+      .end('Internal server error.');
+  } else {
+    next();
+
+    return;
+  }
+});
 
 ```
 
 ## Storage
 
 `express-tus` does not provide any default storage engines.
+
+### Memory Storage
 
 Refer to the [example](./src/factories/createMemoryStorage.js), in-memory, storage engine.
 

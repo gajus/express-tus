@@ -3,9 +3,6 @@
 import {
   v4 as uuid,
 } from 'uuid';
-import {
-  NotFoundError,
-} from '../errors';
 import type {
   ConfigurationInputType,
   ConfigurationType,
@@ -20,26 +17,6 @@ export default (input: ConfigurationInputType): ConfigurationType => {
   };
 
   configuration.basePath = input.basePath || '/';
-
-  if (input.formatErrorResponse) {
-    configuration.formatErrorResponse = input.formatErrorResponse;
-  } else {
-    configuration.formatErrorResponse = (error) => {
-      if (error instanceof NotFoundError) {
-        return {
-          body: 'Resource not found.',
-          headers: {},
-          statusCode: 404,
-        };
-      }
-
-      return {
-        body: 'Request cannot be processed.',
-        headers: {},
-        statusCode: 400,
-      };
-    };
-  }
 
   if (input.createUid) {
     configuration.createUid = input.createUid;

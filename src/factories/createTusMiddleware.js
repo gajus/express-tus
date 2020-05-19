@@ -82,13 +82,6 @@ const log = Logger.child({
   namespace: 'createTusMiddleware',
 });
 
-const respond = (outgoingMessage, response) => {
-  outgoingMessage
-    .set(response.headers)
-    .status(response.statusCode)
-    .end(response.body);
-};
-
 export default (configurationInput: ConfigurationInputType) => {
   const configuration = createConfiguration(configurationInput);
 
@@ -160,12 +153,7 @@ export default (configurationInput: ConfigurationInputType) => {
         error: serializeError(error),
       }, 'upload rejected');
 
-      respond(
-        outgoingMessage,
-        configuration.formatErrorResponse(error),
-      );
-
-      return;
+      throw error;
     }
 
     const upload = await configuration.getUpload(uid);
@@ -217,12 +205,7 @@ export default (configurationInput: ConfigurationInputType) => {
         error: serializeError(error),
       }, 'upload not found');
 
-      respond(
-        outgoingMessage,
-        configuration.formatErrorResponse(error),
-      );
-
-      return;
+      throw error;
     }
 
     if (upload.uploadOffset !== uploadOffset) {
@@ -300,12 +283,7 @@ export default (configurationInput: ConfigurationInputType) => {
         error: serializeError(error),
       }, 'upload rejected');
 
-      respond(
-        outgoingMessage,
-        configuration.formatErrorResponse(error),
-      );
-
-      return;
+      throw error;
     }
 
     upload = await configuration.getUpload(incomingMessage.params.uid);
@@ -326,18 +304,22 @@ export default (configurationInput: ConfigurationInputType) => {
   router.delete('/:uid', async (incomingMessage, outgoingMessage) => {
     try {
       await configuration.getUpload(incomingMessage.params.uid);
-      await configuration.delete(incomingMessage.params.uid);
     } catch (error) {
       log.error({
         error: serializeError(error),
       }, 'upload not found');
 
-      respond(
-        outgoingMessage,
-        configuration.formatErrorResponse(error),
-      );
+      throw error;
+    }
 
-      return;
+    try {
+      await configuration.delete(incomingMessage.params.uid);
+    } catch (error) {
+      log.error({
+        error: serializeError(error),
+      }, 'upload cannot be deleted');
+
+      throw error;
     }
 
     outgoingMessage
@@ -355,12 +337,7 @@ export default (configurationInput: ConfigurationInputType) => {
         error: serializeError(error),
       }, 'upload not found');
 
-      respond(
-        outgoingMessage,
-        configuration.formatErrorResponse(error),
-      );
-
-      return;
+      throw error;
     }
 
     if (upload.uploadExpires) {

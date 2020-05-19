@@ -71,33 +71,6 @@ test('empty POST creates a new upload resource', async (t) => {
   t.is(response.body, '');
 });
 
-test('rejected POST produces error response using formatErrorResponse', async (t) => {
-  const server = await createTestServer({
-    createUpload: async () => {
-      throw new Error('foo');
-    },
-    formatErrorResponse: () => {
-      return {
-        body: 'Unauthorized',
-        headers: {},
-        statusCode: 401,
-      };
-    },
-  });
-
-  const response = await got(server.url, {
-    headers: {
-      'tus-resumable': '1.0.0',
-      'upload-length': '100',
-    },
-    method: 'POST',
-    throwHttpErrors: false,
-  });
-
-  t.is(response.statusCode, 401);
-  t.is(response.body, 'Unauthorized');
-});
-
 test('location is resolved using base-path configuration', async (t) => {
   const server = await createTestServer({
     ...createMemoryStorage(),
@@ -314,40 +287,6 @@ test('produces 400 if PATCH request is made without upload-offset', async (t) =>
   });
 
   t.is(response.statusCode, 400);
-});
-
-test('PATCH produces error response using formatErrorResponse', async (t) => {
-  const server = await createTestServer({
-    formatErrorResponse: () => {
-      return {
-        body: 'Unauthorized',
-        headers: {},
-        statusCode: 401,
-      };
-    },
-    getUpload: () => {
-      return {
-        uploadLength: 100,
-        uploadOffset: 0,
-      };
-    },
-    upload: async () => {
-      throw new Error('foo');
-    },
-  });
-
-  const response = await got(server.url + '/foo', {
-    headers: {
-      'content-type': 'application/offset+octet-stream',
-      'tus-resumable': '1.0.0',
-      'upload-length': '100',
-      'upload-offset': '0',
-    },
-    method: 'PATCH',
-    throwHttpErrors: false,
-  });
-
-  t.is(response.statusCode, 401);
 });
 
 test('produces 404 upload cannot be found', async (t) => {

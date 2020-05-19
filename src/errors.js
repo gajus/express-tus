@@ -4,7 +4,9 @@
 
 import ExtendableError from 'es6-error';
 
-export class UnexpectedStateError extends ExtendableError {
+export class ExpressTusError extends ExtendableError {}
+
+export class UnexpectedStateError extends ExpressTusError {
   code: string;
 
   constructor (message: string, code: string = 'UNEXPECTED_STATE_ERROR') {
@@ -14,13 +16,7 @@ export class UnexpectedStateError extends ExtendableError {
   }
 }
 
-export class UnimplementedError extends UnexpectedStateError {
-  constructor () {
-    super('Functionality is not implemented.', 'UNIMPLEMENTED');
-  }
-}
-
-export class UserError extends ExtendableError {
+export class UserError extends ExpressTusError {
   code: string;
 
   constructor (message: string, code: string = 'USER_ERROR') {

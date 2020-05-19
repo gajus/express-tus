@@ -76,18 +76,15 @@ export type StorageType = {|
 /**
  * @property basePath Path to where the tus middleware is mounted. Used for redirects. Defaults to `/`.
  * @property createUid Generates unique identifier for each upload request. Defaults to UUID v4.
- * @property formatErrorResponse Formats HTTP response in case of an error.
  */
 export type ConfigurationInputType = {|
   +basePath?: string,
   +createUid?: () => MaybePromiseType<string>,
-  +formatErrorResponse?: (error: Error) => ResponseType,
   ...StorageType,
 |};
 
 export type ConfigurationType = {|
   +basePath: string,
   +createUid: () => MaybePromiseType<string>,
-  +formatErrorResponse: (error: Error) => ResponseType,
   ...StorageType,
 |};
