@@ -246,27 +246,6 @@ test('PATCH with an unexpected upload-offset produces 409 conflict', async (t) =
   t.is(response.statusCode, 409);
 });
 
-test('PATCH produces 404 if upload is not found', async (t) => {
-  const server = await createTestServer({
-    getUpload: () => {
-      throw new NotFoundError();
-    },
-  });
-
-  const response = await got(server.url + '/foo', {
-    headers: {
-      'content-type': 'application/offset+octet-stream',
-      'tus-resumable': '1.0.0',
-      'upload-length': '100',
-      'upload-offset': '50',
-    },
-    method: 'PATCH',
-    throwHttpErrors: false,
-  });
-
-  t.is(response.statusCode, 404);
-});
-
 test('produces 400 if PATCH request is made without upload-offset', async (t) => {
   const server = await createTestServer({
     getUpload: () => {
@@ -287,27 +266,6 @@ test('produces 400 if PATCH request is made without upload-offset', async (t) =>
   });
 
   t.is(response.statusCode, 400);
-});
-
-test('produces 404 upload cannot be found', async (t) => {
-  const server = await createTestServer({
-    getUpload: () => {
-      throw new NotFoundError();
-    },
-  });
-
-  const response = await got(server.url + '/foo', {
-    headers: {
-      'content-type': 'application/offset+octet-stream',
-      'tus-resumable': '1.0.0',
-      'upload-length': '100',
-      'upload-offset': '0',
-    },
-    method: 'PATCH',
-    throwHttpErrors: false,
-  });
-
-  t.is(response.statusCode, 404);
 });
 
 test('successful PATCH produces 204', async (t) => {
@@ -337,24 +295,6 @@ test('successful PATCH produces 204', async (t) => {
   t.is(response.statusCode, 204);
   t.is(upload.firstCall.firstArg.uploadLength, 100);
   t.is(upload.firstCall.firstArg.chunkLength, 3);
-});
-
-test('HEAD produces 404 when upload cannot be found', async (t) => {
-  const server = await createTestServer({
-    getUpload: () => {
-      throw new NotFoundError();
-    },
-  });
-
-  const response = await got(server.url + '/foo', {
-    headers: {
-      'tus-resumable': '1.0.0',
-    },
-    method: 'HEAD',
-    throwHttpErrors: false,
-  });
-
-  t.is(response.statusCode, 404);
 });
 
 test('successful HEAD produces 200', async (t) => {
@@ -442,24 +382,6 @@ test('successful HEAD describes meta-data', async (t) => {
   });
 
   t.is(response.headers['upload-metadata'], 'baz cXV4, foo YmFy');
-});
-
-test('not found upload DELETE responds with 404', async (t) => {
-  const server = await createTestServer({
-    getUpload: () => {
-      throw new NotFoundError();
-    },
-  });
-
-  const response = await got(server.url + '/foo', {
-    headers: {
-      'tus-resumable': '1.0.0',
-    },
-    method: 'DELETE',
-    throwHttpErrors: false,
-  });
-
-  t.is(response.statusCode, 404);
 });
 
 test('successful DELETE responds with 204', async (t) => {
