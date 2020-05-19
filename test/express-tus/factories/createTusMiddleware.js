@@ -211,7 +211,6 @@ test('PATCH request with unsupported content-type produces 415', async (t) => {
     headers: {
       'content-type': 'application/json',
       'tus-resumable': '1.0.0',
-      'upload-length': '100',
     },
     method: 'PATCH',
     throwHttpErrors: false,
@@ -233,7 +232,6 @@ test('PATCH with an unexpected upload-offset produces 409 conflict', async (t) =
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '100',
       'upload-offset': '50',
     },
     method: 'PATCH',
@@ -256,7 +254,6 @@ test('produces 400 if PATCH request is made without upload-offset', async (t) =>
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '100',
     },
     method: 'PATCH',
     throwHttpErrors: false,
@@ -283,7 +280,6 @@ test('successful PATCH produces 204', async (t) => {
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '100',
       'upload-offset': '0',
     },
     method: 'PATCH',
@@ -451,7 +447,6 @@ test('PATCH describes upload-expires', async (t) => {
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '100',
       'upload-offset': '0',
     },
     method: 'PATCH',
@@ -502,7 +497,6 @@ test('validates checksum', async (t) => {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
       'upload-checksum': 'sha1 Ys23Ag/5IOWqZCw9QGaVDdHwH00=',
-      'upload-length': '100',
       'upload-offset': '0',
     },
     method: 'PATCH',
@@ -529,7 +523,6 @@ test('produces 400 error if checksum algorithm is not supported', async (t) => {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
       'upload-checksum': 'sha512 Ys23Ag/5IOWqZCw9QGaVDdHwH00=',
-      'upload-length': '100',
       'upload-offset': '0',
     },
     method: 'PATCH',
@@ -561,7 +554,6 @@ test('discards chunk if checksum does not match', async (t) => {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
       'upload-checksum': 'sha1 Ys23Ag/5IOWqZCw9QGaVDdHwH00=',
-      'upload-length': '3',
       'upload-offset': '0',
     },
     method: 'PATCH',
@@ -575,7 +567,6 @@ test('discards chunk if checksum does not match', async (t) => {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
       'upload-checksum': 'sha1 Ys23Ag/5IOWqZCw9QGaVDdHwH00=',
-      'upload-length': '3',
       'upload-offset': '3',
     },
     method: 'PATCH',

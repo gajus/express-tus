@@ -36,7 +36,6 @@ test('uploads file', async (t) => {
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '3',
       'upload-offset': '0',
     },
     method: 'PATCH',
@@ -78,7 +77,6 @@ test('uploads file (multiple patch requests)', async (t) => {
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '3',
       'upload-offset': '0',
     },
     method: 'PATCH',
@@ -89,7 +87,6 @@ test('uploads file (multiple patch requests)', async (t) => {
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '3',
       'upload-offset': '3',
     },
     method: 'PATCH',
@@ -129,7 +126,6 @@ test('does not modify source (wrong offset)', async (t) => {
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '3',
       'upload-offset': '0',
     },
     method: 'PATCH',
@@ -142,7 +138,6 @@ test('does not modify source (wrong offset)', async (t) => {
     headers: {
       'content-type': 'application/offset+octet-stream',
       'tus-resumable': '1.0.0',
-      'upload-length': '3',
       'upload-offset': '1',
     },
     method: 'PATCH',
