@@ -27,7 +27,6 @@ test('uploads file', async (t) => {
       'upload-length': '3',
     },
     method: 'POST',
-    responseType: 'json',
   });
 
   const response1 = await got(resolveUrl(server.url, response0.headers.location), {
@@ -39,7 +38,10 @@ test('uploads file', async (t) => {
       'upload-offset': '0',
     },
     method: 'PATCH',
+    responseType: 'json',
   });
+
+  t.is(response1.headers['upload-uid'], 'foo');
 
   t.is(response1.statusCode, 204);
   t.is(response1.headers['upload-offset'], '3');

@@ -304,6 +304,7 @@ export default (configurationInput: ConfigurationInputType) => {
     outgoingMessage
       .set({
         'upload-offset': upload.uploadOffset,
+        'upload-uid': upload.uid,
       })
       .status(204)
       .end();
