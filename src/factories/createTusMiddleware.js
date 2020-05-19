@@ -191,6 +191,14 @@ export default (configurationInput: ConfigurationInputType) => {
       return;
     }
 
+    if (incomingMessage.headers['upload-length'] !== undefined) {
+      outgoingMessage
+        .status(400)
+        .end('upload-length has been already sent.');
+
+      return;
+    }
+
     if (incomingMessage.headers['upload-offset'] === undefined) {
       outgoingMessage
         .status(400)
