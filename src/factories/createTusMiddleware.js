@@ -172,9 +172,7 @@ export default (configurationInput: ConfigurationInputType) => {
         location: resolveUrl(configuration.basePath.replace(/\/$/g, '') + '/', uid),
       })
       .status(201)
-      .json({
-        uid,
-      });
+      .end();
   });
 
   router.options('/', (incomingMessage, outgoingMessage) => {

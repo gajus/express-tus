@@ -4,9 +4,6 @@ import test from 'ava';
 import sinon from 'sinon';
 import got from 'got';
 import createMemoryStorage from '../../../src/factories/createMemoryStorage';
-import {
-  NotFoundError,
-} from '../../../src/errors';
 import createTestServer from '../../helpers/createTestServer';
 
 test('OPTIONS successful response produces 204', async (t) => {

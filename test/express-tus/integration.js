@@ -30,10 +30,6 @@ test('uploads file', async (t) => {
     responseType: 'json',
   });
 
-  t.deepEqual(response0.body, {
-    uid: 'foo',
-  });
-
   const response1 = await got(resolveUrl(server.url, response0.headers.location), {
     body: Buffer.from('bar'),
     headers: {
