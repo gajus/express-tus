@@ -27,6 +27,11 @@ test('uploads file', async (t) => {
       'upload-length': '3',
     },
     method: 'POST',
+    responseType: 'json',
+  });
+
+  t.deepEqual(response0.body, {
+    uid: 'foo',
   });
 
   const response1 = await got(resolveUrl(server.url, response0.headers.location), {
