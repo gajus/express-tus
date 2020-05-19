@@ -41,6 +41,7 @@ Conceptually, [tus](https://tus.io/) is a great initiative. However, the existin
 
 import {
   createTusMiddleware,
+  formatUploadMetadataHeader,
 } from 'express-tus';
 import type {
   ConfigurationInputType,
@@ -48,9 +49,15 @@ import type {
   ResponseType,
   StorageType,
   UploadInputType,
+  UploadMetadataType,
   UploadType,
   UploadUpdateInputType,
 } from 'express-tus';
+
+/**
+ * Formats Tus compliant metadata header.
+ */
+formatUploadMetadataHeader(uploadMetadata: UploadMetadataType): string;
 
 /**
  * @property uploadExpires UNIX timestamp (in milliseconds) after which the upload will be deleted.

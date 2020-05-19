@@ -5,6 +5,9 @@ export {
   createMemoryStorage,
 } from './factories';
 export {
+  formatUploadMetadataHeader,
+} from './utilities';
+export {
   ExpressTusError,
   NotFoundError,
   UserError,
@@ -16,6 +19,7 @@ export type {
   ResponseType,
   StorageType,
   UploadInputType,
+  UploadMetadataType,
   UploadType,
   UploadUpdateInputType,
 } from './types';
