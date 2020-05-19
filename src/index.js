@@ -16,7 +16,6 @@ export type {
   ConfigurationInputType,
   ConfigurationType,
   IncomingMessageType,
-  ResponseType,
   StorageType,
   UploadInputType,
   UploadMetadataType,

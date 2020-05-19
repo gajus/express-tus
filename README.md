@@ -119,6 +119,9 @@ app.use(createTusMiddleware({
 }));
 
 app.use((error, incomingMessage, outgoingMessage, next) => {
+  // `incomingMessage.tus.uid` contains the upload UID.
+  incomingMessage.tus.uid;
+
   if (error instanceof ExpressTusError) {
     if (error instanceof NotFoundError) {
       outgoingMessage

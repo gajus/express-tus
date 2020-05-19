@@ -39,12 +39,14 @@ export type UploadUpdateInputType = {|
 type MaybePromiseType<T> = Promise<T> | T;
 
 /**
+ * @property uid Upload UID.
  * @property uploadExpires UNIX timestamp (in milliseconds) after which the upload will be deleted.
  * @property uploadLength Indicates the size of the entire upload (in bytes).
  * @property uploadMetadata Key-value meta-data about the upload.
  * @property uploadOffset Indicates a byte offset within a resource.
  */
 export type UploadType = {|
+  +uid: string,
   +uploadExpires?: number,
   +uploadLength: number,
   +uploadMetadata: UploadMetadataType,

@@ -22,6 +22,7 @@ test('createUpload creates an empty upload', async (t) => {
   t.true(storage.foo.buffer.equals(Buffer.alloc(100)));
 
   t.deepEqual(upload, {
+    uid: 'foo',
     uploadLength: 100,
     uploadMetadata: {},
     uploadOffset: 0,
@@ -55,6 +56,7 @@ test('upload applies bytes contained in the incoming message at the given offset
   });
 
   t.deepEqual(await memoryStorage.getUpload('foo'), {
+    uid: 'foo',
     uploadLength: 6,
     uploadMetadata: {},
     uploadOffset: 3,
@@ -67,6 +69,7 @@ test('upload applies bytes contained in the incoming message at the given offset
   });
 
   t.deepEqual(await memoryStorage.getUpload('foo'), {
+    uid: 'foo',
     uploadLength: 6,
     uploadMetadata: {},
     uploadOffset: 6,

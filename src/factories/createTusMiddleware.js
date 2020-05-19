@@ -141,6 +141,10 @@ export default (configurationInput: ConfigurationInputType) => {
 
     const uid = await configuration.createUid();
 
+    incomingMessage.tus = {
+      uid,
+    };
+
     try {
       await configuration.createUpload({
         incomingMessage,
@@ -207,6 +211,10 @@ export default (configurationInput: ConfigurationInputType) => {
 
       throw error;
     }
+
+    incomingMessage.tus = {
+      uid: upload.uid,
+    };
 
     if (upload.uploadOffset !== uploadOffset) {
       outgoingMessage
@@ -302,8 +310,10 @@ export default (configurationInput: ConfigurationInputType) => {
   });
 
   router.delete('/:uid', async (incomingMessage, outgoingMessage) => {
+    let upload;
+
     try {
-      await configuration.getUpload(incomingMessage.params.uid);
+      upload = await configuration.getUpload(incomingMessage.params.uid);
     } catch (error) {
       log.error({
         error: serializeError(error),
@@ -311,6 +321,10 @@ export default (configurationInput: ConfigurationInputType) => {
 
       throw error;
     }
+
+    incomingMessage.tus = {
+      uid: upload.uid,
+    };
 
     try {
       await configuration.delete(incomingMessage.params.uid);
@@ -339,6 +353,10 @@ export default (configurationInput: ConfigurationInputType) => {
 
       throw error;
     }
+
+    incomingMessage.tus = {
+      uid: upload.uid,
+    };
 
     if (upload.uploadExpires) {
       outgoingMessage
