@@ -29,6 +29,8 @@ test('uploads file', async (t) => {
     method: 'POST',
   });
 
+  t.is(response0.headers['upload-uid'], 'foo');
+
   const response1 = await got(resolveUrl(server.url, response0.headers.location), {
     body: Buffer.from('bar'),
     headers: {
@@ -38,7 +40,6 @@ test('uploads file', async (t) => {
       'upload-offset': '0',
     },
     method: 'PATCH',
-    responseType: 'json',
   });
 
   t.is(response1.headers['upload-uid'], 'foo');

@@ -170,6 +170,7 @@ export default (configurationInput: ConfigurationInputType) => {
     outgoingMessage
       .set({
         location: resolveUrl(configuration.basePath.replace(/\/$/g, '') + '/', uid),
+        'upload-uid': upload.uid,
       })
       .status(201)
       .end();
