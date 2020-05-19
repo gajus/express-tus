@@ -9,13 +9,10 @@ import {
   IncomingMessage as HttpsIncomingMessage,
 } from 'https';
 
-export type UploadMetadataType = {|
+export type UploadMetadataType = {
   +[key: string]: string,
-|};
-
-type HeadersType = {|
-  +[key: string]: string,
-|};
+  ...
+};
 
 export type IncomingMessageType = HttpIncomingMessage | HttpsIncomingMessage;
 
@@ -37,12 +34,6 @@ export type UploadUpdateInputType = {|
   +uid: string,
   +uploadLength: number,
   +uploadOffset: number,
-|};
-
-export type ResponseType = {|
-  +body: string,
-  +headers: HeadersType,
-  +statusCode: number,
 |};
 
 type MaybePromiseType<T> = Promise<T> | T;
