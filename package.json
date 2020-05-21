@@ -90,7 +90,7 @@
     "url": "https://github.com/gajus/express-tus"
   },
   "scripts": {
-    "build": "rm -fr ./dist && babel ./src --source-maps --copy-files --out-dir ./dist",
+    "build": "rm -fr ./dist && NODE_ENV=production babel ./src --out-dir ./dist --copy-files --source-maps && flow-copy-source src dist",
     "lint": "eslint --fix ./src && flow",
     "test": "NODE_ENV=test ava --verbose --serial"
   },
